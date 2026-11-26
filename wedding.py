@@ -599,27 +599,9 @@ a {color:inherit;text-decoration:none}
  <button class="action" onclick="copyLink()">کپی لینک سایت</button>
 </section>
 
-<section class="music-box">
- <div class="music-heading">موسیقی خاطره‌انگیز امیر و زهرا</div>
- <div class="music-subtitle">همینه عشق — راغب</div>
-
- <audio id="weddingMusic" loop>
-  <source src="/static/music.mp3" type="audio/mpeg">
- </audio>
-
- <button class="music-play" type="button" onclick="
-  const m=document.getElementById('weddingMusic');
-  if(m.paused){
-   m.play();
-   this.textContent='Ⅱ';
-  }else{
-   m.pause();
-   this.textContent='▶';
-  }
- ">▶</button>
-
- <p class="music-note">برای شنیدن آهنگ، دکمه پخش را لمس کنید.</p>
-</section>
+<audio id="weddingMusic" loop preload="auto">
+    <source src="/static/music.mp3" type="audio/mpeg">
+</audio>
 
 <footer class="footer">
  <div>با عشق و آرزوی روزهایی روشن</div>
@@ -660,6 +642,12 @@ function openInvitation() {
 }
 
 document.body.style.overflow = "hidden";
+const music = document.getElementById("weddingMusic");
+
+document.addEventListener("pointerdown", function startMusic() {
+    if (!music) return;
+    music.play().catch(() => {});
+});
 
 const target = new Date("{{DATE}}").getTime();
 
