@@ -561,10 +561,10 @@ a {color:inherit;text-decoration:none}
  <div class="section-title">جزئیات مراسم</div>
  <div class="details">
   <div class="detail"><div class="symbol">♛</div><h3>زمان جشن</h3><p>چهارشنبه ۲ دی ۱۴۰۵<br>۱۹ تا ۲۲</p></div>
-  <div class="detail"><div class="symbol">✧</div><h3>مکان مراسم</h3><p>پذیرایی فریال<br>سمنان</p></div>
+  <div class="detail"><div class="symbol">✧</div><h3>مکان مراسم</h3><p>تالار پذیرایی فریال<br>سمنان</p></div>
  </div>
- <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
- <a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=تالار+پذیرایی+فریال+سمنان">مسیریابی تا تالار</a>
+  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
+<a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&amp;destination=میدان+معلم،+بلوار+بسیج،+جنب+ورزشگاه+الغدیر،+تالار+پذیرایی+فریال،+سمنان">مسیریابی تا تالار</a>
 </section>
 
 <section class="section">
@@ -598,7 +598,7 @@ a {color:inherit;text-decoration:none}
 <footer class="footer">
  <div>با عشق و آرزوی روزهایی روشن</div>
  <strong>امیر ♡ زهرا</strong>
- <div>۳ دی ۱۴۰۵</div>
+ <div>۲ دی ۱۴۰۵</div>
 </footer>
 </main>
 
@@ -617,7 +617,10 @@ function openInvitation() {
  const envelope = document.getElementById("envelope");
  const intro = document.getElementById("intro");
  const site = document.getElementById("site");
-
+if (music) {
+    music.currentTime = 0;
+    music.play().catch(() => {});
+}
  envelope.classList.add("open");
 
  // ابتدا پاکت باز می‌شود؛ سپس صفحه اول محو می‌شود.
