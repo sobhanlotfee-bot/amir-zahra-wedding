@@ -11,8 +11,8 @@ BASE = Path(__file__).resolve().parent
 STATIC = BASE / "static"
 STATIC.mkdir(exist_ok=True)
 
-WEDDING_DATE = "2026-12-24T19:00:00+03:30"
-ADDRESS = "میدان معلم، بلوار بسیج، جنب ورزشگاه القدیر، تبار پذیرایی فریال، سمنان"
+WEDDING_DATE = "2026-12-23T19:00:00+03:30"
+ADDRESS = "میدان معلم، بلوار بسیج، جنب ورزشگاه الغدیر، تالار پذیرایی فریال، سمنان"
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -543,7 +543,7 @@ a {color:inherit;text-decoration:none}
   <div class="gold-line"></div>
   <p class="invitation">با افتخار از شما دعوت می‌کنیم در جشن آغاز زندگی مشترک ما حضور داشته باشید.</p>
   <div class="round-seal">A ♡ Z</div>
-  <div>پنجشنبه ۳ دی ۱۴۰۵</div>
+  <div>چهارشنبه ۲ دی ۱۴۰۵</div>
   <div>ساعت ۱۹ تا ۲۲</div>
  </div>
 </header>
@@ -561,7 +561,7 @@ a {color:inherit;text-decoration:none}
 <section class="section">
  <div class="section-title">جزئیات مراسم</div>
  <div class="details">
-  <div class="detail"><div class="symbol">♛</div><h3>زمان جشن</h3><p>پنجشنبه ۳ دی ۱۴۰۵<br>۱۹ تا ۲۲</p></div>
+  <div class="detail"><div class="symbol">♛</div><h3>زمان جشن</h3><p>چهارشنبه ۲ دی ۱۴۰۵<br>۱۹ تا ۲۲</p></div>
   <div class="detail"><div class="symbol">✧</div><h3>مکان مراسم</h3><p>پذیرایی فریال<br>سمنان</p></div>
  </div>
  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
