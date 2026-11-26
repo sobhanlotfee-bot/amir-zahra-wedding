@@ -82,7 +82,7 @@ def home():
 
         if (
             not name
-            or count not in ["1", "2", "3", "4", "5"]
+            or count not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
             or attendance not in ["yes", "no"]
         ):
             return {
@@ -778,6 +778,11 @@ img,video {max-width:100%;}
    <option value="3">۳ نفر</option>
    <option value="4">۴ نفر</option>
    <option value="5">۵ نفر</option>
+   <option value="6">۶ نفر</option>
+   <option value="7">۷ نفر</option>
+   <option value="8">۸ نفر</option>
+   <option value="9">۹ نفر</option>
+   <option value="10">۱۰ نفر</option>
   </select>
 
   <div class="choice-title">پاسخ شما به دعوت</div>
