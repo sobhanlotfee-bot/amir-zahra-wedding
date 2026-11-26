@@ -128,9 +128,6 @@ a {color:inherit;text-decoration:none}
  justify-content:center;
  padding:20px;
  background:radial-gradient(circle,#fffdf6,#e9d7b5);
- opacity:1;
- visibility:visible;
- transition:opacity 1.5s ease, visibility 1.5s ease;
 }
 
 .envelope-wrap {
@@ -164,7 +161,7 @@ a {color:inherit;text-decoration:none}
  background:linear-gradient(150deg,#fff5e1,#d9c08e);
  clip-path:polygon(0 0,100% 0,50% 100%);
  transform-origin:top;
- transition:transform 1.2s ease;
+ transition:transform .3s ease;
  z-index:4;
 }
 
@@ -184,7 +181,7 @@ a {color:inherit;text-decoration:none}
  background:radial-gradient(circle at 30% 25%,#f0d89b,#b18a4b 65%,#735329);
  border:5px double #f9e9bd;
  box-shadow:0 7px 20px #75552d55;
- transition:opacity .5s ease;
+ transition:opacity .2s ease;
 }
 
 .letter {
@@ -198,32 +195,19 @@ a {color:inherit;text-decoration:none}
  background:linear-gradient(145deg,#fffefa,#fff5df);
  box-shadow:0 0 20px #8c6a3530;
  border:1px solid #ead9b8;
- transition:transform 1.3s ease;
-}
-
-.envelope.open .envelope-flap {
- transform:rotateX(180deg);
-}
-.envelope.open .seal {opacity:0}
-.envelope.open .letter {transform:translateY(-65%)}
-
-.intro.leaving {
- opacity:0;
- visibility:hidden;
- pointer-events:none;
 }
 
 #site {
  opacity:0;
  visibility:hidden;
- transform:translateY(35px);
- transition:opacity 1.8s ease, transform 1.8s ease, visibility 1.8s ease;
+ transform:none;
+ transition:none;
 }
 
 #site.visible {
  opacity:1;
  visibility:visible;
- transform:translateY(0);
+ transform:none;
 }
 
 .hero {
@@ -595,39 +579,29 @@ function openInvitation() {
  if (opened) return;
  opened = true;
 
- const envelope = document.getElementById("envelope");
  const intro = document.getElementById("intro");
  const site = document.getElementById("site");
-
- // پخش موسیقی هنگام باز شدن پاکت
  const weddingAudio = document.getElementById("weddingMusic");
+
+ // درخواست پخش آهنگ دقیقاً هنگام کلیک روی نامه
  if (weddingAudio) {
   weddingAudio.currentTime = 0;
-  weddingAudio.play().catch(() => {});
+  const playPromise = weddingAudio.play();
+
+  if (playPromise !== undefined) {
+   playPromise.catch(error => {
+    console.log("پخش آهنگ انجام نشد:", error);
+   });
+  }
  }
 
- envelope.classList.add("open");
-
- setTimeout(() => {
-  intro.classList.add("leaving");
-  site.classList.add("visible");
-  document.body.style.overflow = "auto";
-
-  setTimeout(() => {
-   intro.style.display = "none";
-  }, 1600);
-
- }, 1500);
+ // نمایش فوری صفحه اصلی، بدون مکث و انیمیشن تأخیری
+ site.classList.add("visible");
+ intro.style.display = "none";
+ document.body.style.overflow = "auto";
 }
 
 document.body.style.overflow = "hidden";
-
-const music = document.getElementById("weddingMusic");
-
-document.addEventListener("pointerdown", function startMusic() {
- if (!music) return;
- music.play().catch(() => {});
-});
 
 const target = new Date("{{DATE}}").getTime();
 
