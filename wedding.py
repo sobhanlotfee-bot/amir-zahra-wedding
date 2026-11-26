@@ -603,17 +603,22 @@ a {color:inherit;text-decoration:none}
  <div class="music-heading">موسیقی خاطره‌انگیز امیر و زهرا</div>
  <div class="music-subtitle">همینه عشق — راغب</div>
 
- <div style="position:relative;width:100%;padding-top:56.25%;margin-top:20px;overflow:hidden;border-radius:25px">
- <iframe
-  src="https://www.youtube.com/embed/RY6yICzGj8I?playsinline=1&loop=1&playlist=RY6yICzGj8I"
-  title="Ragheb - Hamine Eshgh"
-  style="position:absolute;inset:0;width:100%;height:100%;border:0"
-  allow="autoplay; encrypted-media; picture-in-picture; web-share"
-  allowfullscreen>
- </iframe>
-</div>
+ <audio id="weddingMusic" loop>
+  <source src="/static/music.mp3" type="audio/mpeg">
+ </audio>
 
- <p class="music-note">برای پخش آهنگ، دکمه پخش ویدئو را لمس کنید.</p>
+ <button class="music-play" type="button" onclick="
+  const m=document.getElementById('weddingMusic');
+  if(m.paused){
+   m.play();
+   this.textContent='Ⅱ';
+  }else{
+   m.pause();
+   this.textContent='▶';
+  }
+ ">▶</button>
+
+ <p class="music-note">برای شنیدن آهنگ، دکمه پخش را لمس کنید.</p>
 </section>
 
 <footer class="footer">
