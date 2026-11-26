@@ -19,12 +19,12 @@ ADDRESS = "میدان معلم، بلوار بسیج، جنب ورزشگاه ا�
 def home():
     if request.method == "POST":
         name = request.form.get("name", "").strip()[:80]
-        count = request.form.get("count", "1")
-        if name and count in ["1", "2", "3", "4", "5"]:
-            with open(BASE / "guests.csv", "a", newline="", encoding="utf-8-sig") as f:
-                csv.writer(f).writerow([name, count, datetime.now().isoformat()])
-        return redirect("/#rsvp")
-
+count = request.form.get("count", "1")
+attendance = request.form.get("attendance", "")
+if name and count in ["1", "2", "3", "4", "5"] and attendance in ["yes", "no"]:
+    with open(BASE / "guests.csv", "a", newline="", encoding="utf-8-sig") as f:
+        csv.writer(f).writerow([name, count, attendance, datetime.now().isoformat()])
+return redirect("/#rsvp")
     photos = [
         f"/static/photo{i}.jpg"
         for i in range(1, 7)
@@ -591,13 +591,6 @@ a {color:inherit;text-decoration:none}
  </form>
 </section>
 
-<section class="section">
- <div class="section-title">دعوت‌نامه را به اشتراک بگذارید</div>
- <p>خوشحال می‌شویم این دعوت را با عزیزانتان به اشتراک بگذارید.</p>
- <button class="action" onclick="shareInvite()">اشتراک‌گذاری</button>
- <button class="action" onclick="copyLink()">کپی لینک سایت</button>
-</section>
-
 <audio id="weddingMusic" loop preload="auto">
     <source src="/static/music.mp3" type="audio/mpeg">
 </audio>
@@ -683,28 +676,6 @@ document.addEventListener("keydown", e => {
  if (e.key === "Escape") closePhoto();
 });
 
-async function shareInvite() {
- const data = {
-  title: "عروسی امیر و زهرا",
-  text: "دعوت‌نامه جشن ازدواج امیر و زهرا",
-  url: location.href
- };
-
- if (navigator.share) {
-  try { await navigator.share(data); } catch (e) {}
- } else {
-  copyLink();
- }
-}
-
-async function copyLink() {
- try {
-  await navigator.clipboard.writeText(location.href);
-  alert("لینک کپی شد.");
- } catch (e) {
-  prompt("لینک سایت:", location.href);
- }
-}
 for (let i = 0; i < 16; i++) {
  const petal = document.createElement("div");
  petal.className = "petal";
