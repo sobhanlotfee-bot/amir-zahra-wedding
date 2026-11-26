@@ -449,6 +449,183 @@ footer {
     padding:15px;
 }
 
+/* CHAMPAGNE ROSE - LUXURY DESIGN */
+
+body {
+  background:
+    radial-gradient(ellipse at 10% 10%, #f4dfd2, transparent 35%),
+    radial-gradient(ellipse at 90% 30%, #ead7bb, transparent 35%),
+    linear-gradient(145deg, #fffaf2, #f5eadb);
+  background-attachment: fixed;
+}
+
+.hero {
+  background: radial-gradient(ellipse, #fffdf8, #ead9c2);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero::before,
+.hero::after {
+  content: "❀";
+  position: absolute;
+  color: #b99565;
+  opacity: .25;
+  font-size: 190px;
+  z-index: -1;
+  animation: flowerFloat 7s ease-in-out infinite;
+}
+
+.hero::before {
+  top: 5%;
+  right: -20px;
+}
+
+.hero::after {
+  content: "✿";
+  bottom: 0;
+  left: -20px;
+  animation-delay: -3s;
+}
+
+@keyframes flowerFloat {
+  0%,100% { transform: translateY(0) rotate(-10deg); }
+  50% { transform: translateY(-18px) rotate(10deg); }
+}
+
+.hero-card {
+  border-radius: 48% 48% 38px 38px / 16% 16% 38px 38px;
+  background: linear-gradient(145deg, #fffefa, #f8eddd);
+  box-shadow: 0 30px 80px #80603a30;
+  padding: 55px 25px;
+  animation: cardEnter 1.2s ease both;
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel {
+  border-radius: 42px 42px 75px 75px;
+  background: linear-gradient(145deg, #fffefa, #fbf0e2);
+  border: 1px solid #e4cfad;
+  box-shadow: 0 18px 50px #8c69301c;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before,
+.panel::after {
+  content: "❀";
+  position: absolute;
+  color: #bd9867;
+  opacity: .2;
+  font-size: 55px;
+  pointer-events: none;
+}
+
+.panel::before { top: 8px; right: 15px; }
+.panel::after { bottom: 8px; left: 15px; }
+
+.tile {
+  border-radius: 32px 32px 48px 48px;
+  background: linear-gradient(145deg, #fffefa, #f5e9d8);
+  transition: .35s ease;
+}
+
+.tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px #8c69302a;
+}
+
+.btn, button {
+  border-radius: 50px;
+  background: linear-gradient(130deg, #98703c, #e0c18b, #a77c43);
+  box-shadow: 0 9px 22px #98703c35;
+  transition: .3s ease;
+}
+
+.btn:hover, button:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+
+.gallery img,
+.gallery video {
+  border-radius: 35px 35px 55px 55px;
+  transition: .4s ease;
+}
+
+.gallery a:hover img,
+.gallery video:hover {
+  transform: scale(1.03) rotate(-1deg);
+}
+
+.time {
+  border-radius: 28px 28px 40px 40px;
+  background: linear-gradient(145deg, #fffefa, #f3e5d1);
+}
+
+.flower {
+  color: #c58e83;
+  font-size: 25px;
+  text-shadow: 0 3px 12px #b9867d66;
+  animation-name: petalFall;
+}
+
+@keyframes petalFall {
+  0% {
+    transform: translate(0, -10vh) rotate(0);
+    opacity: 0;
+  }
+  15% { opacity: .7; }
+  50% {
+    transform: translate(35px, 50vh) rotate(180deg);
+  }
+  100% {
+    transform: translate(-25px, 110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.envelope {
+  border-radius: 12px 12px 28px 28px;
+  box-shadow: 0 30px 65px #76542e40;
+  animation: envelopeFloat 4s ease-in-out infinite;
+}
+
+@keyframes envelopeFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.seal {
+  box-shadow: 0 8px 25px #704b2855;
+  animation: sealGlow 2.5s infinite;
+}
+
+@keyframes sealGlow {
+  50% { box-shadow: 0 8px 25px #704b2855, 0 0 0 12px #e5c58a33; }
+}
+
+input, select, textarea {
+  border-radius: 22px;
+}
+
+footer {
+  border-radius: 60px 60px 0 0;
+}
+
+@media(max-width:650px) {
+  .hero-card {
+    border-radius: 40% 40% 28px 28px / 12% 12% 28px 28px;
+    padding: 45px 18px;
+  }
+  .panel {
+    border-radius: 30px 30px 55px 55px;
+  }
+}
+
 .admin table {
     width:100%;
     border-collapse:collapse;
