@@ -105,6 +105,7 @@ PAGE = r"""
 
 * {box-sizing:border-box}
 html {scroll-behavior:smooth}
+
 body {
  margin:0;
  font-family:Vazirmatn,Tahoma,sans-serif;
@@ -115,6 +116,7 @@ body {
  linear-gradient(135deg,#fffaf0,#f5ead8,#fffdf7);
  overflow-x:hidden;
 }
+
 button,input,select {font:inherit}
 button {cursor:pointer}
 a {color:inherit;text-decoration:none}
@@ -128,6 +130,15 @@ a {color:inherit;text-decoration:none}
  justify-content:center;
  padding:20px;
  background:radial-gradient(circle,#fffdf6,#e9d7b5);
+ opacity:1;
+ visibility:visible;
+ transition:opacity 1.25s ease, visibility 1.25s ease;
+}
+
+.intro.leaving {
+ opacity:0;
+ visibility:hidden;
+ pointer-events:none;
 }
 
 .envelope-wrap {
@@ -161,7 +172,7 @@ a {color:inherit;text-decoration:none}
  background:linear-gradient(150deg,#fff5e1,#d9c08e);
  clip-path:polygon(0 0,100% 0,50% 100%);
  transform-origin:top;
- transition:transform .3s ease;
+ transition:transform 1.1s cubic-bezier(.22,.61,.36,1);
  z-index:4;
 }
 
@@ -181,7 +192,7 @@ a {color:inherit;text-decoration:none}
  background:radial-gradient(circle at 30% 25%,#f0d89b,#b18a4b 65%,#735329);
  border:5px double #f9e9bd;
  box-shadow:0 7px 20px #75552d55;
- transition:opacity .2s ease;
+ transition:opacity .35s ease;
 }
 
 .letter {
@@ -195,19 +206,35 @@ a {color:inherit;text-decoration:none}
  background:linear-gradient(145deg,#fffefa,#fff5df);
  box-shadow:0 0 20px #8c6a3530;
  border:1px solid #ead9b8;
+ transition:transform 1.1s cubic-bezier(.22,.61,.36,1);
+}
+
+.envelope.open .envelope-flap {
+ transform:rotateX(180deg);
+}
+
+.envelope.open .seal {
+ opacity:0;
+}
+
+.envelope.open .letter {
+ transform:translateY(-65%);
 }
 
 #site {
  opacity:0;
  visibility:hidden;
- transform:none;
- transition:none;
+ transform:translateY(18px);
+ transition:
+  opacity 1.7s ease,
+  transform 1.7s ease,
+  visibility 1.7s ease;
 }
 
 #site.visible {
  opacity:1;
  visibility:visible;
- transform:none;
+ transform:translateY(0);
 }
 
 .hero {
@@ -230,7 +257,11 @@ a {color:inherit;text-decoration:none}
  overflow:hidden;
 }
 
-.eyebrow {font-size:13px;letter-spacing:3px;color:#a27e45}
+.eyebrow {
+ font-size:13px;
+ letter-spacing:3px;
+ color:#a27e45;
+}
 
 .names {
  font-size:clamp(48px,10vw,88px);
@@ -241,7 +272,11 @@ a {color:inherit;text-decoration:none}
  text-shadow:0 6px 18px #c9a86c45;
 }
 
-.and {display:block;font-size:24px;color:#c1a06a}
+.and {
+ display:block;
+ font-size:24px;
+ color:#c1a06a;
+}
 
 .gold-line {
  width:140px;
@@ -250,7 +285,12 @@ a {color:inherit;text-decoration:none}
  background:linear-gradient(90deg,transparent,#b28a48,transparent);
 }
 
-.invitation {max-width:450px;margin:auto;line-height:2.5;color:#796448}
+.invitation {
+ max-width:450px;
+ margin:auto;
+ line-height:2.5;
+ color:#796448;
+}
 
 .round-seal {
  width:90px;
@@ -291,7 +331,12 @@ a {color:inherit;text-decoration:none}
  margin-top:8px;
 }
 
-.countdown {display:flex;justify-content:center;flex-wrap:wrap;gap:13px}
+.countdown {
+ display:flex;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:13px;
+}
 
 .time {
  width:105px;
@@ -306,7 +351,11 @@ a {color:inherit;text-decoration:none}
  justify-content:center;
 }
 
-.time strong {font-size:26px;color:#a17b3d}
+.time strong {
+ font-size:26px;
+ color:#a17b3d;
+}
+
 .time small {color:#8c7759}
 
 .details {
@@ -323,9 +372,17 @@ a {color:inherit;text-decoration:none}
  box-shadow:0 10px 25px #80633a18;
 }
 
-.symbol {font-size:34px;color:#b28a48}
+.symbol {
+ font-size:34px;
+ color:#b28a48;
+}
+
 .detail h3 {color:#9b773e}
-.detail p {line-height:2.1;font-size:14px}
+
+.detail p {
+ line-height:2.1;
+ font-size:14px;
+}
 
 .gallery {
  display:grid;
@@ -345,8 +402,17 @@ a {color:inherit;text-decoration:none}
  transition:transform .4s;
 }
 
-.photo:hover {transform:translateY(-8px) rotate(1deg)}
-.photo img {width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.photo:hover {
+ transform:translateY(-8px) rotate(1deg);
+}
+
+.photo img {
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ border-radius:inherit;
+}
+
 .empty {color:#9c835e}
 
 .video {
@@ -371,7 +437,11 @@ a {color:inherit;text-decoration:none}
 }
 
 .action:hover {transform:translateY(-3px)}
-.form {max-width:450px;margin:auto}
+
+.form {
+ max-width:450px;
+ margin:auto;
+}
 
 .form input,.form select {
  width:100%;
@@ -396,7 +466,10 @@ a {color:inherit;text-decoration:none}
  line-height:2.5;
 }
 
-.footer strong {color:#a17b3d;font-size:22px}
+.footer strong {
+ color:#a17b3d;
+ font-size:22px;
+}
 
 .lightbox {
  position:fixed;
@@ -445,8 +518,14 @@ a {color:inherit;text-decoration:none}
 
 @media(max-width:600px) {
  .hero-card {padding:65px 18px}
- .section {border-radius:38px;padding:32px 16px}
- .time {width:82px;height:82px}
+ .section {
+  border-radius:38px;
+  padding:32px 16px;
+ }
+ .time {
+  width:82px;
+  height:82px;
+ }
  .time strong {font-size:21px}
  .photo {height:240px}
  .names {font-size:57px}
@@ -575,30 +654,45 @@ a {color:inherit;text-decoration:none}
 <script>
 let opened = false;
 
+const weddingAudio = document.getElementById("weddingMusic");
+
+// پیش‌بارگذاری آهنگ برای شروع سریع‌تر
+if (weddingAudio) {
+ weddingAudio.load();
+}
+
 function openInvitation() {
  if (opened) return;
  opened = true;
 
+ const envelope = document.getElementById("envelope");
  const intro = document.getElementById("intro");
  const site = document.getElementById("site");
- const weddingAudio = document.getElementById("weddingMusic");
 
- // درخواست پخش آهنگ دقیقاً هنگام کلیک روی نامه
+ // پخش آهنگ در همان لحظه کلیک
  if (weddingAudio) {
   weddingAudio.currentTime = 0;
-  const playPromise = weddingAudio.play();
-
-  if (playPromise !== undefined) {
-   playPromise.catch(error => {
-    console.log("پخش آهنگ انجام نشد:", error);
-   });
-  }
+  weddingAudio.play().catch(error => {
+   console.log("Audio playback was blocked:", error);
+  });
  }
 
- // نمایش فوری صفحه اصلی، بدون مکث و انیمیشن تأخیری
+ // شروع انیمیشن باز شدن پاکت
+ envelope.classList.add("open");
+
+ // ظاهر شدن تدریجی صفحه اصلی
  site.classList.add("visible");
- intro.style.display = "none";
- document.body.style.overflow = "auto";
+
+ // محو شدن آرام لایه پاکت
+ requestAnimationFrame(() => {
+  intro.classList.add("leaving");
+ });
+
+ // آزاد شدن صفحه بعد از پایان انیمیشن
+ setTimeout(() => {
+  intro.style.display = "none";
+  document.body.style.overflow = "auto";
+ }, 1300);
 }
 
 document.body.style.overflow = "hidden";
