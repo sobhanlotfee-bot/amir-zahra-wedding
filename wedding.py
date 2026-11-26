@@ -2,7 +2,6 @@
 from flask import Flask, request, redirect
 from pathlib import Path
 from datetime import datetime
-from urllib.parse import quote
 import csv
 import html
 
@@ -16,9 +15,9 @@ WEDDING_DATE = "2026-12-23T19:00:00+03:30"
 ADDRESS = "میدان معلم، بلوار بسیج، جنب ورزشگاه الغدیر، تالار پذیرایی فریال، سمنان"
 
 MAP_URL = (
-    "https://www.google.com/maps/dir/?api=1&destination="
-    + quote(ADDRESS)
-    + "&travelmode=driving&dir_action=navigate"
+    "https://www.google.com/maps/dir/?api=1"
+    "&destination=35.5868900%2C53.3861140"
+    "&travelmode=driving&dir_action=navigate"
 )
 
 
@@ -317,16 +316,21 @@ a {color:inherit;text-decoration:none}
  margin-top:8px;
 }
 
+/* شمارش معکوس: چهار مورد همیشه در یک ردیف */
 .countdown {
- display:flex;
+ display:grid;
+ grid-template-columns:repeat(4, minmax(0, 1fr));
  justify-content:center;
- flex-wrap:wrap;
- gap:13px;
+ gap:10px;
+ direction:rtl;
+ max-width:520px;
+ margin:0 auto;
 }
 
 .time {
- width:105px;
- height:105px;
+ width:100%;
+ height:auto;
+ aspect-ratio:1;
  border-radius:50%;
  background:linear-gradient(145deg,#fff,#f0dfbd);
  border:1px solid #d7bb80;
@@ -335,14 +339,18 @@ a {color:inherit;text-decoration:none}
  flex-direction:column;
  align-items:center;
  justify-content:center;
+ min-width:0;
 }
 
 .time strong {
- font-size:26px;
+ font-size:clamp(17px,4vw,26px);
  color:#a17b3d;
 }
 
-.time small {color:#8c7759}
+.time small {
+ color:#8c7759;
+ font-size:clamp(10px,2.5vw,14px);
+}
 
 .details {
  display:grid;
@@ -575,23 +583,16 @@ a {color:inherit;text-decoration:none}
   border-radius:38px;
   padding:32px 16px;
  }
- .time {
-  width:82px;
-  height:82px;
+ .countdown {
+  gap:6px;
+  max-width:100%;
  }
- .time strong {font-size:21px}
+ .time strong {font-size:clamp(15px,4vw,21px)}
+ .time small {font-size:clamp(9px,2.5vw,12px)}
  .photo {height:240px}
  .names {font-size:57px}
  .attendance-options {grid-template-columns:1fr}
  .choice-card {min-height:82px}
-}
-
-@media(prefers-reduced-motion:reduce) {
- *,*:before,*:after {
-  animation-duration:.01ms!important;
-  transition-duration:.01ms!important;
-  scroll-behavior:auto!important;
- }
 }
 </style>
 </head>
@@ -601,6 +602,7 @@ a {color:inherit;text-decoration:none}
 <div class="intro" id="intro">
  <div class="envelope-wrap">
   <div class="intro-caption">یک دعوت ویژه برای شما</div>
+
   <div class="envelope" id="envelope" onclick="openInvitation()">
    <div class="letter"></div>
    <div class="envelope-flap"></div>
@@ -635,21 +637,28 @@ a {color:inherit;text-decoration:none}
 
 <section class="section">
  <div class="section-title">جزئیات مراسم</div>
+
  <div class="details">
   <div class="detail">
    <div class="symbol">♛</div>
    <h3>زمان جشن</h3>
    <p>چهارشنبه ۲ دی ۱۴۰۵<br>۱۹ تا ۲۲</p>
   </div>
+
   <div class="detail">
    <div class="symbol">✧</div>
    <h3>مکان مراسم</h3>
    <p>تالار پذیرایی فریال<br>سمنان</p>
   </div>
  </div>
+
  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
- <a class="action" target="_blank" rel="noopener" href="{{MAP_URL}}">
-  مسیریابی تا تالار
+
+ <a class="action"
+    target="_blank"
+    rel="noopener"
+    href="{{MAP_URL}}">
+    مسیریابی تا تالار
  </a>
 </section>
 
