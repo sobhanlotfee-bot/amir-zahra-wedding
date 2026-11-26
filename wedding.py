@@ -1,10 +1,9 @@
 
-from flask import Flask, request, redirect, send_file
+from flask import Flask, request, redirect
 from pathlib import Path
 from datetime import datetime
 from urllib.parse import quote
 import csv
-import io
 import html
 
 app = Flask(__name__)
@@ -69,29 +68,6 @@ def home():
         "{{ADDRESS}}", html.escape(ADDRESS)
     ).replace(
         "{{MAP_URL}}", html.escape(MAP_URL, quote=True)
-    )
-
-
-@app.route("/calendar")
-def calendar():
-    content = """BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Amir and Zahra//Wedding//FA
-BEGIN:VEVENT
-UID:amir-zahra-wedding-20261223
-DTSTART:20261223T153000Z
-DTEND:20261223T183000Z
-SUMMARY:جشن ازدواج امیر و زهرا
-LOCATION:میدان معلم، بلوار بسیج، جنب ورزشگاه الغدیر، تالار پذیرایی فریال، سمنان
-DESCRIPTION:جشن آغاز زندگی مشترک امیر و زهرا
-END:VEVENT
-END:VCALENDAR"""
-
-    return send_file(
-        io.BytesIO(content.encode("utf-8")),
-        mimetype="text/calendar",
-        as_attachment=True,
-        download_name="amir-zahra-wedding.ics"
     )
 
 
@@ -394,6 +370,22 @@ a {color:inherit;text-decoration:none}
  font-size:14px;
 }
 
+.action {
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ border:0;
+ border-radius:50px;
+ padding:14px 27px;
+ color:white;
+ background:linear-gradient(135deg,#d6b875,#98713a);
+ box-shadow:0 8px 20px #80633a35;
+ transition:.3s;
+ margin:7px;
+}
+
+.action:hover {transform:translateY(-3px)}
+
 .gallery {
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
@@ -432,25 +424,9 @@ a {color:inherit;text-decoration:none}
  box-shadow:0 15px 35px #80633a30;
 }
 
-.action {
- display:inline-flex;
- align-items:center;
- justify-content:center;
- border:0;
- border-radius:50px;
- padding:14px 27px;
- color:white;
- background:linear-gradient(135deg,#d6b875,#98713a);
- box-shadow:0 8px 20px #80633a35;
- transition:.3s;
- margin:7px;
-}
-
-.action:hover {transform:translateY(-3px)}
-
 .form {
- max-width:450px;
- margin:auto;
+ max-width:490px;
+ margin:25px auto 0;
 }
 
 .form input,.form select {
@@ -467,6 +443,73 @@ a {color:inherit;text-decoration:none}
 .form input:focus,.form select:focus {
  border-color:#b28a48;
  box-shadow:0 0 0 3px #d9bd8340;
+}
+
+.choice-title {
+ margin:22px 0 12px;
+ color:#8b7048;
+ font-weight:600;
+}
+
+.attendance-options {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+ margin-top:12px;
+}
+
+.attendance-option {
+ position:relative;
+ display:block;
+ cursor:pointer;
+}
+
+.attendance-option input {
+ position:absolute;
+ opacity:0;
+ pointer-events:none;
+}
+
+.choice-card {
+ min-height:105px;
+ padding:17px 12px;
+ border:2px solid #e2d2b2;
+ border-radius:25px;
+ background:linear-gradient(145deg,#fffefa,#f8efdf);
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+ line-height:1.9;
+ color:#725b3b;
+ transition:.2s;
+}
+
+.choice-card .choice-icon {font-size:25px}
+
+.attendance-option.yes input:checked+.choice-card {
+ border-color:#77966c;
+ background:#edf4e9;
+ box-shadow:0 0 0 3px #77966c25;
+ color:#45643d;
+}
+
+.attendance-option.no input:checked+.choice-card {
+ border-color:#bd8b80;
+ background:#f9eeeb;
+ box-shadow:0 0 0 3px #bd8b8025;
+ color:#87554d;
+}
+
+.attendance-option input:focus-visible+.choice-card {
+ outline:3px solid #b18a4b;
+ outline-offset:3px;
+}
+
+.form-submit {
+ width:100%;
+ margin-top:20px;
 }
 
 .footer {
@@ -539,6 +582,8 @@ a {color:inherit;text-decoration:none}
  .time strong {font-size:21px}
  .photo {height:240px}
  .names {font-size:57px}
+ .attendance-options {grid-template-columns:1fr}
+ .choice-card {min-height:82px}
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -556,7 +601,6 @@ a {color:inherit;text-decoration:none}
 <div class="intro" id="intro">
  <div class="envelope-wrap">
   <div class="intro-caption">یک دعوت ویژه برای شما</div>
-
   <div class="envelope" id="envelope" onclick="openInvitation()">
    <div class="letter"></div>
    <div class="envelope-flap"></div>
@@ -591,38 +635,21 @@ a {color:inherit;text-decoration:none}
 
 <section class="section">
  <div class="section-title">جزئیات مراسم</div>
-
  <div class="details">
   <div class="detail">
    <div class="symbol">♛</div>
    <h3>زمان جشن</h3>
    <p>چهارشنبه ۲ دی ۱۴۰۵<br>۱۹ تا ۲۲</p>
   </div>
-
   <div class="detail">
    <div class="symbol">✧</div>
    <h3>مکان مراسم</h3>
    <p>تالار پذیرایی فریال<br>سمنان</p>
   </div>
  </div>
-
  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
-
- <a class="action"
-    target="_blank"
-    rel="noopener"
-    href="{{MAP_URL}}">
-    مسیریابی تا تالار
- </a>
-
- <button class="action" type="button" onclick="shareInvitation()">
-  ارسال دعوت‌نامه با پیام
- </button>
-
- <p id="shareStatus" aria-live="polite" style="font-size:13px;color:#987541"></p>
-
- <a class="action" href="/calendar">
-  افزودن مراسم به تقویم
+ <a class="action" target="_blank" rel="noopener" href="{{MAP_URL}}">
+  مسیریابی تا تالار
  </a>
 </section>
 
@@ -635,12 +662,12 @@ a {color:inherit;text-decoration:none}
 
 <section class="section" id="rsvp">
  <div class="section-title">حضور شما مایه افتخار ماست</div>
- <p>لطفاً حضور خود را ثبت کنید.</p>
+ <p>لطفاً نام و تعداد مهمانان را وارد کنید و یکی از گزینه‌های زیر را انتخاب کنید.</p>
 
  <form class="form" method="POST">
   <input name="name" maxlength="80" placeholder="نام و نام خانوادگی" required>
 
-  <select name="count">
+  <select name="count" aria-label="تعداد مهمانان">
    <option value="1">۱ نفر</option>
    <option value="2">۲ نفر</option>
    <option value="3">۳ نفر</option>
@@ -648,13 +675,27 @@ a {color:inherit;text-decoration:none}
    <option value="5">۵ نفر</option>
   </select>
 
-  <button class="action" type="submit" name="attendance" value="yes">
-   با کمال میل در جشن شما حضور خواهم داشت
-  </button>
+  <div class="choice-title">پاسخ شما به دعوت</div>
 
-  <button class="action" type="submit" name="attendance" value="no">
-   متأسفانه امکان حضور ندارم
-  </button>
+  <div class="attendance-options">
+   <label class="attendance-option yes">
+    <input type="radio" name="attendance" value="yes" required>
+    <span class="choice-card">
+     <span class="choice-icon">♡</span>
+     <span>با کمال میل در جشن شما حضور خواهم داشت</span>
+    </span>
+   </label>
+
+   <label class="attendance-option no">
+    <input type="radio" name="attendance" value="no" required>
+    <span class="choice-card">
+     <span class="choice-icon">✧</span>
+     <span>متأسفانه امکان حضور ندارم</span>
+    </span>
+   </label>
+  </div>
+
+  <button class="action form-submit" type="submit">ثبت پاسخ</button>
  </form>
 </section>
 
@@ -712,43 +753,6 @@ function openInvitation() {
  }, 1300);
 }
 
-
-// ارسال دعوت‌نامه از طریق قابلیت اشتراک‌گذاری گوشی
-async function shareInvitation() {
- const message =
-  "با افتخار از شما دعوت می‌کنیم در جشن ازدواج امیر و زهرا حضور داشته باشید.\n" +
-  "چهارشنبه ۲ دی ۱۴۰۵، ساعت ۱۹ تا ۲۲\n" +
-  "تالار پذیرایی فریال، سمنان\n" +
-  "آدرس و مسیریابی:\n" +
-  "{{MAP_URL}}";
-
- const invitation =
-  message + "\n\nلینک دعوت‌نامه:\n" + window.location.href;
-
- const status = document.getElementById("shareStatus");
-
- if (navigator.share) {
-  try {
-   await navigator.share({
-    title: "دعوت‌نامه عروسی امیر و زهرا",
-    text: invitation
-   });
-   status.textContent = "دعوت‌نامه برای اشتراک‌گذاری آماده شد.";
-  } catch (error) {
-   if (error.name !== "AbortError") {
-    status.textContent = "اشتراک‌گذاری انجام نشد؛ دوباره تلاش کنید.";
-   }
-  }
- } else {
-  const whatsapp =
-   "https://wa.me/?text=" + encodeURIComponent(invitation);
-
-  window.open(whatsapp, "_blank", "noopener");
-  status.textContent = "صفحه ارسال پیام واتساپ باز شد.";
- }
-}
-
-
 document.body.style.overflow = "hidden";
 
 const target = new Date("{{DATE}}").getTime();
@@ -772,7 +776,6 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-
 function openPhoto(button) {
  const img = button.querySelector("img");
  document.getElementById("largePhoto").src = img.src;
@@ -786,7 +789,6 @@ function closePhoto() {
 document.addEventListener("keydown", e => {
  if (e.key === "Escape") closePhoto();
 });
-
 
 for (let i = 0; i < 16; i++) {
  const petal = document.createElement("div");
@@ -805,7 +807,6 @@ for (let i = 0; i < 16; i++) {
 </body>
 </html>
 """
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
