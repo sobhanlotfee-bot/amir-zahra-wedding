@@ -4,6 +4,10 @@ from pathlib import Path
 from datetime import datetime
 import csv
 import html
+import os
+import urllib.request
+import urllib.parse
+import json
 
 app = Flask(__name__)
 
@@ -21,6 +25,51 @@ MAP_URL = (
 )
 
 
+def send_telegram_message(name, count, attendance):
+    token = os.getenv("BOT_TOKEN")
+    chat_id = os.getenv("ADMIN_CHAT_ID")
+
+    if not token or not chat_id:
+        app.logger.error("Telegram environment variables are missing")
+        return False
+
+    status = (
+        "با کمال میل در جشن حضور خواهد داشت ❤️"
+        if attendance == "yes"
+        else "متأسفانه امکان حضور ندارد"
+    )
+
+    message = (
+        "💌 <b>پاسخ جدید دعوت‌نامه عروسی</b>\n\n"
+        f"👤 نام مهمان: {html.escape(name)}\n"
+        f"👥 تعداد نفرات: {count}\n"
+        f"📩 پاسخ: {status}"
+    )
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+    data = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": message,
+        "parse_mode": "HTML"
+    }).encode("utf-8")
+
+    try:
+        req = urllib.request.Request(url, data=data)
+        with urllib.request.urlopen(req, timeout=10) as response:
+            result = json.loads(response.read().decode("utf-8"))
+
+        if not result.get("ok"):
+            app.logger.error("Telegram API returned an unsuccessful response")
+            return False
+
+        return True
+
+    except Exception:
+        app.logger.exception("Telegram notification failed")
+        return False
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
@@ -33,6 +82,8 @@ def home():
                 csv.writer(f).writerow([
                     name, count, attendance, datetime.now().isoformat()
                 ])
+
+            send_telegram_message(name, count, attendance)
 
         return redirect("/#rsvp")
 
@@ -88,9 +139,7 @@ PAGE = r"""
  --ink:#59452f;
 }
 
-* {
- box-sizing:border-box;
-}
+* { box-sizing:border-box; }
 
 html {
  width:100%;
@@ -121,9 +170,7 @@ button,input,select {
 button {cursor:pointer}
 a {color:inherit;text-decoration:none}
 
-img,video {
- max-width:100%;
-}
+img,video {max-width:100%;}
 
 .intro {
  position:fixed;
@@ -214,17 +261,9 @@ img,video {
  transition:transform 1.1s cubic-bezier(.22,.61,.36,1);
 }
 
-.envelope.open .envelope-flap {
- transform:rotateX(180deg);
-}
-
-.envelope.open .seal {
- opacity:0;
-}
-
-.envelope.open .letter {
- transform:translateY(-65%);
-}
+.envelope.open .envelope-flap {transform:rotateX(180deg);}
+.envelope.open .seal {opacity:0;}
+.envelope.open .letter {transform:translateY(-65%);}
 
 #site {
  width:100%;
@@ -233,10 +272,7 @@ img,video {
  opacity:0;
  visibility:hidden;
  transform:translateY(18px);
- transition:
-  opacity 1.7s ease,
-  transform 1.7s ease,
-  visibility 1.7s ease;
+ transition:opacity 1.7s ease,transform 1.7s ease,visibility 1.7s ease;
 }
 
 #site.visible {
@@ -269,11 +305,7 @@ img,video {
  overflow:hidden;
 }
 
-.eyebrow {
- font-size:13px;
- letter-spacing:3px;
- color:#a27e45;
-}
+.eyebrow {font-size:13px;letter-spacing:3px;color:#a27e45;}
 
 .names {
  font-size:clamp(48px,10vw,88px);
@@ -284,11 +316,7 @@ img,video {
  text-shadow:0 6px 18px #c9a86c45;
 }
 
-.and {
- display:block;
- font-size:24px;
- color:#c1a06a;
-}
+.and {display:block;font-size:24px;color:#c1a06a;}
 
 .gold-line {
  width:140px;
@@ -345,7 +373,6 @@ img,video {
  margin-top:8px;
 }
 
-/* چهار بخش شمارش معکوس در یک ردیف */
 .countdown {
  display:grid;
  grid-template-columns:repeat(4,minmax(0,1fr));
@@ -372,15 +399,8 @@ img,video {
  justify-content:center;
 }
 
-.time strong {
- font-size:clamp(15px,4vw,26px);
- color:#a17b3d;
-}
-
-.time small {
- color:#8c7759;
- font-size:clamp(9px,2.5vw,14px);
-}
+.time strong {font-size:clamp(15px,4vw,26px);color:#a17b3d;}
+.time small {color:#8c7759;font-size:clamp(9px,2.5vw,14px);}
 
 .details {
  display:grid;
@@ -397,17 +417,9 @@ img,video {
  box-shadow:0 10px 25px #80633a18;
 }
 
-.symbol {
- font-size:34px;
- color:#b28a48;
-}
-
-.detail h3 {color:#9b773e}
-
-.detail p {
- line-height:2.1;
- font-size:14px;
-}
+.symbol {font-size:34px;color:#b28a48;}
+.detail h3 {color:#9b773e;}
+.detail p {line-height:2.1;font-size:14px;}
 
 .action {
  display:inline-flex;
@@ -424,7 +436,7 @@ img,video {
  max-width:100%;
 }
 
-.action:hover {transform:translateY(-3px)}
+.action:hover {transform:translateY(-3px);}
 
 .gallery {
  display:grid;
@@ -447,18 +459,9 @@ img,video {
  transition:transform .4s;
 }
 
-.photo:hover {
- transform:translateY(-8px) rotate(1deg);
-}
-
-.photo img {
- width:100%;
- height:100%;
- object-fit:cover;
- border-radius:inherit;
-}
-
-.empty {color:#9c835e}
+.photo:hover {transform:translateY(-8px) rotate(1deg);}
+.photo img {width:100%;height:100%;object-fit:cover;border-radius:inherit;}
+.empty {color:#9c835e;}
 
 .video {
  width:100%;
@@ -467,11 +470,7 @@ img,video {
  box-shadow:0 15px 35px #80633a30;
 }
 
-.form {
- width:100%;
- max-width:490px;
- margin:25px auto 0;
-}
+.form {width:100%;max-width:490px;margin:25px auto 0;}
 
 .form input,.form select {
  display:block;
@@ -491,11 +490,7 @@ img,video {
  box-shadow:0 0 0 3px #d9bd8340;
 }
 
-.choice-title {
- margin:22px 0 12px;
- color:#8b7048;
- font-weight:600;
-}
+.choice-title {margin:22px 0 12px;color:#8b7048;font-weight:600;}
 
 .attendance-options {
  display:grid;
@@ -533,7 +528,7 @@ img,video {
  transition:.2s;
 }
 
-.choice-card .choice-icon {font-size:25px}
+.choice-card .choice-icon {font-size:25px;}
 
 .attendance-option.yes input:checked+.choice-card {
  border-color:#77966c;
@@ -554,10 +549,7 @@ img,video {
  outline-offset:3px;
 }
 
-.form-submit {
- width:100%;
- margin-top:20px;
-}
+.form-submit {width:100%;margin-top:20px;}
 
 .footer {
  text-align:center;
@@ -566,10 +558,7 @@ img,video {
  line-height:2.5;
 }
 
-.footer strong {
- color:#a17b3d;
- font-size:22px;
-}
+.footer strong {color:#a17b3d;font-size:22px;}
 
 .lightbox {
  position:fixed;
@@ -582,7 +571,7 @@ img,video {
  padding:20px;
 }
 
-.lightbox.show {display:flex}
+.lightbox.show {display:flex;}
 
 .lightbox img {
  max-width:95%;
@@ -612,11 +601,8 @@ img,video {
  animation:fall linear infinite;
 }
 
-@keyframes fall {
- to {transform:translateY(110vh) rotate(450deg)}
-}
+@keyframes fall {to {transform:translateY(110vh) rotate(450deg);}}
 
-/* تنظیم دقیق برای موبایل */
 @media screen and (max-width:768px) {
  html,body {
   width:100%;
@@ -630,10 +616,7 @@ img,video {
   overflow-x:clip;
  }
 
- .hero {
-  min-height:auto;
-  padding:35px 12px;
- }
+ .hero {min-height:auto;padding:35px 12px;}
 
  .hero-card {
   width:100%;
@@ -655,24 +638,14 @@ img,video {
   gap:5px;
  }
 
- .time {
-  width:100%;
-  min-width:0;
- }
+ .time {width:100%;min-width:0;}
 
- .details,.gallery {
-  grid-template-columns:minmax(0,1fr);
- }
+ .details,.gallery {grid-template-columns:minmax(0,1fr);}
 
- .attendance-options {
-  grid-template-columns:minmax(0,1fr);
- }
+ .attendance-options {grid-template-columns:minmax(0,1fr);}
 
- .names {
-  font-size:clamp(42px,12vw,60px);
- }
-
- .photo {height:240px}
+ .names {font-size:clamp(42px,12vw,60px);}
+ .photo {height:240px;}
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -742,10 +715,7 @@ img,video {
 
  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
 
- <a class="action"
-    target="_blank"
-    rel="noopener"
-    href="{{MAP_URL}}">
+ <a class="action" target="_blank" rel="noopener" href="{{MAP_URL}}">
     مسیریابی تا تالار
  </a>
 </section>
