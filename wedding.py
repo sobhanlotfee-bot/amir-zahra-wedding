@@ -62,10 +62,9 @@ def calendar():
 VERSION:2.0
 PRODID:-//Amir and Zahra//Wedding//FA
 BEGIN:VEVENT
-UID:amir-zahra-wedding-20261224
-DTSTAMP:20261125T120000Z
-DTSTART:20261224T153000Z
-DTEND:20261224T183000Z
+UID:amir-zahra-wedding-20261223
+DTSTART:20261223T153000Z
+DTEND:20261223T183000Z
 SUMMARY:جشن ازدواج امیر و زهرا
 LOCATION:پذیرایی فریال، سمنان
 DESCRIPTION:جشن آغاز زندگی مشترک امیر و زهرا
@@ -565,8 +564,7 @@ a {color:inherit;text-decoration:none}
   <div class="detail"><div class="symbol">✧</div><h3>مکان مراسم</h3><p>پذیرایی فریال<br>سمنان</p></div>
  </div>
  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
- <a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=تبار+پذیرایی+فریال+سمنان">مشاهده مسیر روی نقشه</a>
- <a class="action" href="/calendar">افزودن به تقویم</a>
+ <a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=تالار+پذیرایی+فریال+سمنان">مسیریابی تا تالار</a>
 </section>
 
 <section class="section">
@@ -588,7 +586,8 @@ a {color:inherit;text-decoration:none}
    <option value="4">۴ نفر</option>
    <option value="5">۵ نفر</option>
   </select>
-  <button class="action" type="submit">ثبت حضور</button>
+  <button class="action" type="submit" name="attendance" value="yes">با کمال میل در جشن شما حضور خواهم داشت</button>
+<button class="action" type="submit" name="attendance" value="no">متأسفانه امکان حضور ندارم</button>
  </form>
 </section>
 
