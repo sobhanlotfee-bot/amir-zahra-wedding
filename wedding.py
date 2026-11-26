@@ -604,14 +604,14 @@ a {color:inherit;text-decoration:none}
  <div class="music-subtitle">همینه عشق — راغب</div>
 
  <div style="position:relative;width:100%;padding-top:56.25%;margin-top:20px;overflow:hidden;border-radius:25px">
-  <iframe
-   src="https://www.youtube.com/embed/RY6yICzGj8I?autoplay=1&loop=1&playlist=RY6yICzGj8I"
-   title="Ragheb - Hamine Eshgh"
-   style="position:absolute;inset:0;width:100%;height:100%;border:0"
-   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-   allowfullscreen>
-  </iframe>
- </div>
+ <iframe
+  src="https://www.youtube.com/embed/RY6yICzGj8I?playsinline=1&loop=1&playlist=RY6yICzGj8I"
+  title="Ragheb - Hamine Eshgh"
+  style="position:absolute;inset:0;width:100%;height:100%;border:0"
+  allow="autoplay; encrypted-media; picture-in-picture; web-share"
+  allowfullscreen>
+ </iframe>
+</div>
 
  <p class="music-note">برای پخش آهنگ، دکمه پخش ویدئو را لمس کنید.</p>
 </section>
