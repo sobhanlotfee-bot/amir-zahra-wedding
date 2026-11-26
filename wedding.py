@@ -1,3 +1,4 @@
+
 from flask import Flask, request, redirect, send_file
 from pathlib import Path
 from datetime import datetime
@@ -19,12 +20,17 @@ ADDRESS = "میدان معلم، بلوار بسیج، جنب ورزشگاه ا�
 def home():
     if request.method == "POST":
         name = request.form.get("name", "").strip()[:80]
-count = request.form.get("count", "1")
-attendance = request.form.get("attendance", "")
-if name and count in ["1", "2", "3", "4", "5"] and attendance in ["yes", "no"]:
-    with open(BASE / "guests.csv", "a", newline="", encoding="utf-8-sig") as f:
-        csv.writer(f).writerow([name, count, attendance, datetime.now().isoformat()])
-return redirect("/#rsvp")
+        count = request.form.get("count", "1")
+        attendance = request.form.get("attendance", "")
+
+        if name and count in ["1", "2", "3", "4", "5"] and attendance in ["yes", "no"]:
+            with open(BASE / "guests.csv", "a", newline="", encoding="utf-8-sig") as f:
+                csv.writer(f).writerow([
+                    name, count, attendance, datetime.now().isoformat()
+                ])
+
+        return redirect("/#rsvp")
+
     photos = [
         f"/static/photo{i}.jpg"
         for i in range(1, 7)
@@ -66,7 +72,7 @@ UID:amir-zahra-wedding-20261223
 DTSTART:20261223T153000Z
 DTEND:20261223T183000Z
 SUMMARY:جشن ازدواج امیر و زهرا
-LOCATION:پذیرایی فریال، سمنان
+LOCATION:میدان معلم، بلوار بسیج، جنب ورزشگاه الغدیر، تالار پذیرایی فریال، سمنان
 DESCRIPTION:جشن آغاز زندگی مشترک امیر و زهرا
 END:VEVENT
 END:VCALENDAR"""
@@ -125,11 +131,6 @@ a {color:inherit;text-decoration:none}
  opacity:1;
  visibility:visible;
  transition:opacity 1.5s ease, visibility 1.5s ease;
-}
-.intro.hidden {
- opacity:0;
- visibility:hidden;
- pointer-events:none;
 }
 
 .envelope-wrap {
@@ -203,16 +204,9 @@ a {color:inherit;text-decoration:none}
 .envelope.open .envelope-flap {
  transform:rotateX(180deg);
 }
+.envelope.open .seal {opacity:0}
+.envelope.open .letter {transform:translateY(-65%)}
 
-.envelope.open .seal {
- opacity:0;
-}
-
-.envelope.open .letter {
- transform:translateY(-65%);
-}
-
-/* محو شدن کامل صفحه پاکت */
 .intro.leaving {
  opacity:0;
  visibility:hidden;
@@ -223,10 +217,7 @@ a {color:inherit;text-decoration:none}
  opacity:0;
  visibility:hidden;
  transform:translateY(35px);
- transition:
- opacity 1.8s ease,
- transform 1.8s ease,
- visibility 1.8s ease;
+ transition:opacity 1.8s ease, transform 1.8s ease, visibility 1.8s ease;
 }
 
 #site.visible {
@@ -243,6 +234,7 @@ a {color:inherit;text-decoration:none}
  text-align:center;
  padding:35px 18px;
 }
+
 .hero-card {
  width:min(850px,100%);
  padding:75px 25px;
@@ -253,7 +245,9 @@ a {color:inherit;text-decoration:none}
  position:relative;
  overflow:hidden;
 }
+
 .eyebrow {font-size:13px;letter-spacing:3px;color:#a27e45}
+
 .names {
  font-size:clamp(48px,10vw,88px);
  font-weight:700;
@@ -262,14 +256,18 @@ a {color:inherit;text-decoration:none}
  margin:25px 0;
  text-shadow:0 6px 18px #c9a86c45;
 }
+
 .and {display:block;font-size:24px;color:#c1a06a}
+
 .gold-line {
  width:140px;
  height:2px;
  margin:25px auto;
  background:linear-gradient(90deg,transparent,#b28a48,transparent);
 }
+
 .invitation {max-width:450px;margin:auto;line-height:2.5;color:#796448}
+
 .round-seal {
  width:90px;
  height:90px;
@@ -294,19 +292,23 @@ a {color:inherit;text-decoration:none}
  box-shadow:0 25px 60px #82643b20,inset 0 2px 10px white;
  text-align:center;
 }
+
 .section-title {
  font-size:27px;
  color:#a17b3d;
  font-weight:700;
  margin-bottom:30px;
 }
+
 .section-title:after {
  content:"✧";
  display:block;
  color:#c4a166;
  margin-top:8px;
 }
+
 .countdown {display:flex;justify-content:center;flex-wrap:wrap;gap:13px}
+
 .time {
  width:105px;
  height:105px;
@@ -319,13 +321,16 @@ a {color:inherit;text-decoration:none}
  align-items:center;
  justify-content:center;
 }
+
 .time strong {font-size:26px;color:#a17b3d}
 .time small {color:#8c7759}
+
 .details {
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
  gap:20px;
 }
+
 .detail {
  padding:30px 15px;
  border-radius:45px;
@@ -333,15 +338,18 @@ a {color:inherit;text-decoration:none}
  border:1px solid #e3cea4;
  box-shadow:0 10px 25px #80633a18;
 }
+
 .symbol {font-size:34px;color:#b28a48}
 .detail h3 {color:#9b773e}
 .detail p {line-height:2.1;font-size:14px}
+
 .gallery {
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
  gap:25px;
  padding:10px;
 }
+
 .photo {
  height:285px;
  padding:9px;
@@ -352,15 +360,18 @@ a {color:inherit;text-decoration:none}
  overflow:hidden;
  transition:transform .4s;
 }
+
 .photo:hover {transform:translateY(-8px) rotate(1deg)}
 .photo img {width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .empty {color:#9c835e}
+
 .video {
  width:100%;
  max-width:700px;
  border-radius:35px;
  box-shadow:0 15px 35px #80633a30;
 }
+
 .action {
  display:inline-flex;
  align-items:center;
@@ -374,8 +385,10 @@ a {color:inherit;text-decoration:none}
  transition:.3s;
  margin:7px;
 }
+
 .action:hover {transform:translateY(-3px)}
 .form {max-width:450px;margin:auto}
+
 .form input,.form select {
  width:100%;
  padding:15px 20px;
@@ -386,73 +399,11 @@ a {color:inherit;text-decoration:none}
  color:#5c4930;
  background:#fffdf8;
 }
+
 .form input:focus,.form select:focus {
  border-color:#b28a48;
  box-shadow:0 0 0 3px #d9bd8340;
 }
-
-.music-box {
- width:min(560px,92%);
- margin:45px auto;
- padding:28px 22px;
- text-align:center;
- border-radius:42px;
- border:1px solid #e2cda3;
- background:linear-gradient(145deg,#fffdf8,#f4e8d2);
- box-shadow:0 18px 45px #80633a20,inset 0 2px 8px white;
-}
-.music-heading {font-size:21px;font-weight:700;color:#9b773e}
-.music-subtitle {font-size:13px;color:#9b8564;margin-top:7px}
-.music-player {
- display:flex;
- align-items:center;
- gap:15px;
- margin:24px 0 18px;
- padding:15px;
- border-radius:28px;
- background:#fffaf0;
- border:1px solid #ead9b8;
-}
-.music-disc {
- width:58px;
- height:58px;
- flex:0 0 58px;
- border-radius:50%;
- display:grid;
- place-items:center;
- color:#fff4d7;
- font-size:27px;
- background:radial-gradient(circle at center,#e6cf9d 0 12%,#98713a 13% 18%,#d5b574 19% 100%);
-}
-.music-disc.playing {animation:spin 5s linear infinite}
-@keyframes spin {to{transform:rotate(360deg)}}
-.music-info {flex:1;text-align:right;min-width:0}
-.music-info strong {display:block;color:#765a32;font-size:14px}
-.music-info span {display:block;color:#9b8564;font-size:12px;margin-top:5px}
-.music-play {
- width:48px;
- height:48px;
- flex:0 0 48px;
- border:0;
- border-radius:50%;
- color:white;
- font-size:18px;
- background:linear-gradient(135deg,#d6b875,#98713a);
-}
-.music-progress-row,.volume-row {
- display:flex;
- align-items:center;
- gap:10px;
- color:#8d7653;
- font-size:12px;
-}
-.music-progress-row input,.volume-row input {
- flex:1;
- min-width:0;
- accent-color:#aa8448;
-}
-.volume-row {max-width:260px;margin:12px auto 0}
-.music-note {font-size:12px;color:#9b8564;margin:14px 0 0}
 
 .footer {
  text-align:center;
@@ -460,7 +411,9 @@ a {color:inherit;text-decoration:none}
  color:#987b50;
  line-height:2.5;
 }
+
 .footer strong {color:#a17b3d;font-size:22px}
+
 .lightbox {
  position:fixed;
  inset:0;
@@ -471,7 +424,9 @@ a {color:inherit;text-decoration:none}
  justify-content:center;
  padding:20px;
 }
+
 .lightbox.show {display:flex}
+
 .lightbox img {
  max-width:95%;
  max-height:85vh;
@@ -479,6 +434,7 @@ a {color:inherit;text-decoration:none}
  border-radius:35px;
  box-shadow:0 20px 70px #0008;
 }
+
 .close {
  position:absolute;
  top:20px;
@@ -488,6 +444,7 @@ a {color:inherit;text-decoration:none}
  border:0;
  font-size:35px;
 }
+
 .petal {
  position:fixed;
  top:-30px;
@@ -497,6 +454,7 @@ a {color:inherit;text-decoration:none}
  z-index:5;
  animation:fall linear infinite;
 }
+
 @keyframes fall {
  to {transform:translateY(110vh) rotate(450deg)}
 }
@@ -508,8 +466,8 @@ a {color:inherit;text-decoration:none}
  .time strong {font-size:21px}
  .photo {height:240px}
  .names {font-size:57px}
- .music-box {padding:24px 15px}
 }
+
 @media(prefers-reduced-motion:reduce) {
  *,*:before,*:after {
   animation-duration:.01ms!important;
@@ -535,6 +493,7 @@ a {color:inherit;text-decoration:none}
 </div>
 
 <main id="site">
+
 <header class="hero">
  <div class="hero-card">
   <div class="eyebrow">دعوت‌نامه رسمی جشن ازدواج</div>
@@ -560,11 +519,24 @@ a {color:inherit;text-decoration:none}
 <section class="section">
  <div class="section-title">جزئیات مراسم</div>
  <div class="details">
-  <div class="detail"><div class="symbol">♛</div><h3>زمان جشن</h3><p>چهارشنبه ۲ دی ۱۴۰۵<br>۱۹ تا ۲۲</p></div>
-  <div class="detail"><div class="symbol">✧</div><h3>مکان مراسم</h3><p>تالار پذیرایی فریال<br>سمنان</p></div>
+  <div class="detail">
+   <div class="symbol">♛</div>
+   <h3>زمان جشن</h3>
+   <p>چهارشنبه ۲ دی ۱۴۰۵<br>۱۹ تا ۲۲</p>
+  </div>
+  <div class="detail">
+   <div class="symbol">✧</div>
+   <h3>مکان مراسم</h3>
+   <p>تالار پذیرایی فریال<br>سمنان</p>
+  </div>
  </div>
-  <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
-<a class="action" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&amp;destination=میدان+معلم،+بلوار+بسیج،+جنب+ورزشگاه+الغدیر،+تالار+پذیرایی+فریال،+سمنان">مسیریابی تا تالار</a>
+
+ <p style="line-height:2;margin-top:25px">{{ADDRESS}}</p>
+
+ <a class="action" target="_blank" rel="noopener"
+ href="https://www.google.com/maps/dir/?api=1&amp;destination=%D9%85%DB%8C%D8%AF%D8%A7%D9%86%20%D9%85%D8%B9%D9%84%D9%85%D8%8C%20%D8%A8%D9%84%D9%88%D8%A7%D8%B1%20%D8%A8%D8%B3%DB%8C%D8%AC%D8%8C%20%D8%AC%D9%86%D8%A8%20%D9%88%D8%B1%D8%B2%D8%B4%DA%AF%D8%A7%D9%87%20%D8%A7%D9%84%D8%BA%D8%AF%DB%8C%D8%B1%D8%8C%20%D8%AA%D8%A7%D9%84%D8%A7%D8%B1%20%D9%BE%D8%B0%DB%8C%D8%B1%D8%A7%DB%8C%DB%8C%20%D9%81%D8%B1%DB%8C%D8%A7%D9%84%D8%8C%20%D8%B3%D9%85%D9%86%D8%A7%D9%86">
+ مسیریابی تا تالار
+ </a>
 </section>
 
 <section class="section">
@@ -577,8 +549,10 @@ a {color:inherit;text-decoration:none}
 <section class="section" id="rsvp">
  <div class="section-title">حضور شما مایه افتخار ماست</div>
  <p>لطفاً حضور خود را ثبت کنید.</p>
+
  <form class="form" method="POST">
   <input name="name" maxlength="80" placeholder="نام و نام خانوادگی" required>
+
   <select name="count">
    <option value="1">۱ نفر</option>
    <option value="2">۲ نفر</option>
@@ -586,13 +560,19 @@ a {color:inherit;text-decoration:none}
    <option value="4">۴ نفر</option>
    <option value="5">۵ نفر</option>
   </select>
-  <button class="action" type="submit" name="attendance" value="yes">با کمال میل در جشن شما حضور خواهم داشت</button>
-<button class="action" type="submit" name="attendance" value="no">متأسفانه امکان حضور ندارم</button>
+
+  <button class="action" type="submit" name="attendance" value="yes">
+   با کمال میل در جشن شما حضور خواهم داشت
+  </button>
+
+  <button class="action" type="submit" name="attendance" value="no">
+   متأسفانه امکان حضور ندارم
+  </button>
  </form>
 </section>
 
 <audio id="weddingMusic" loop preload="auto">
-    <source src="/static/music.mp3" type="audio/mpeg">
+ <source src="/static/music.mp3" type="audio/mpeg">
 </audio>
 
 <footer class="footer">
@@ -600,6 +580,7 @@ a {color:inherit;text-decoration:none}
  <strong>امیر ♡ زهرا</strong>
  <div>۲ دی ۱۴۰۵</div>
 </footer>
+
 </main>
 
 <div class="lightbox" id="lightbox" onclick="closePhoto()">
@@ -617,13 +598,16 @@ function openInvitation() {
  const envelope = document.getElementById("envelope");
  const intro = document.getElementById("intro");
  const site = document.getElementById("site");
-if (music) {
-    music.currentTime = 0;
-    music.play().catch(() => {});
-}
+
+ // پخش موسیقی هنگام باز شدن پاکت
+ const weddingAudio = document.getElementById("weddingMusic");
+ if (weddingAudio) {
+  weddingAudio.currentTime = 0;
+  weddingAudio.play().catch(() => {});
+ }
+
  envelope.classList.add("open");
 
- // ابتدا پاکت باز می‌شود؛ سپس صفحه اول محو می‌شود.
  setTimeout(() => {
   intro.classList.add("leaving");
   site.classList.add("visible");
@@ -637,11 +621,12 @@ if (music) {
 }
 
 document.body.style.overflow = "hidden";
+
 const music = document.getElementById("weddingMusic");
 
 document.addEventListener("pointerdown", function startMusic() {
-    if (!music) return;
-    music.play().catch(() => {});
+ if (!music) return;
+ music.play().catch(() => {});
 });
 
 const target = new Date("{{DATE}}").getTime();
