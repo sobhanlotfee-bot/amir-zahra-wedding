@@ -75,7 +75,7 @@ PAGE = r"""
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#f9f0df">
 <title>دعوت‌نامه عروسی امیر و زهرا</title>
 
@@ -88,11 +88,22 @@ PAGE = r"""
  --ink:#59452f;
 }
 
-* {box-sizing:border-box}
-html {scroll-behavior:smooth}
+* {
+ box-sizing:border-box;
+}
+
+html {
+ width:100%;
+ max-width:100%;
+ overflow-x:hidden;
+ scroll-behavior:smooth;
+}
 
 body {
  margin:0;
+ width:100%;
+ max-width:100%;
+ min-width:0;
  font-family:Vazirmatn,Tahoma,sans-serif;
  color:var(--ink);
  background:
@@ -102,9 +113,17 @@ body {
  overflow-x:hidden;
 }
 
-button,input,select {font:inherit}
+button,input,select {
+ font:inherit;
+ max-width:100%;
+}
+
 button {cursor:pointer}
 a {color:inherit;text-decoration:none}
+
+img,video {
+ max-width:100%;
+}
 
 .intro {
  position:fixed;
@@ -128,6 +147,7 @@ a {color:inherit;text-decoration:none}
 
 .envelope-wrap {
  width:min(440px,90vw);
+ max-width:100%;
  text-align:center;
 }
 
@@ -207,6 +227,9 @@ a {color:inherit;text-decoration:none}
 }
 
 #site {
+ width:100%;
+ max-width:100%;
+ overflow-x:clip;
  opacity:0;
  visibility:hidden;
  transform:translateY(18px);
@@ -223,6 +246,8 @@ a {color:inherit;text-decoration:none}
 }
 
 .hero {
+ width:100%;
+ max-width:100%;
  min-height:100vh;
  display:flex;
  justify-content:center;
@@ -233,6 +258,8 @@ a {color:inherit;text-decoration:none}
 
 .hero-card {
  width:min(850px,100%);
+ max-width:100%;
+ min-width:0;
  padding:75px 25px;
  border-radius:48% 48% 35% 35% / 22% 22% 15% 15%;
  border:1px solid #d5b77d;
@@ -293,6 +320,8 @@ a {color:inherit;text-decoration:none}
 
 .section {
  width:min(1050px,92%);
+ max-width:calc(100% - 24px);
+ min-width:0;
  margin:80px auto;
  padding:42px 22px;
  border-radius:55px;
@@ -316,19 +345,21 @@ a {color:inherit;text-decoration:none}
  margin-top:8px;
 }
 
-/* شمارش معکوس: چهار مورد همیشه در یک ردیف */
+/* چهار بخش شمارش معکوس در یک ردیف */
 .countdown {
  display:grid;
- grid-template-columns:repeat(4, minmax(0, 1fr));
+ grid-template-columns:repeat(4,minmax(0,1fr));
  justify-content:center;
  gap:10px;
  direction:rtl;
+ width:100%;
  max-width:520px;
  margin:0 auto;
 }
 
 .time {
  width:100%;
+ min-width:0;
  height:auto;
  aspect-ratio:1;
  border-radius:50%;
@@ -339,17 +370,16 @@ a {color:inherit;text-decoration:none}
  flex-direction:column;
  align-items:center;
  justify-content:center;
- min-width:0;
 }
 
 .time strong {
- font-size:clamp(17px,4vw,26px);
+ font-size:clamp(15px,4vw,26px);
  color:#a17b3d;
 }
 
 .time small {
  color:#8c7759;
- font-size:clamp(10px,2.5vw,14px);
+ font-size:clamp(9px,2.5vw,14px);
 }
 
 .details {
@@ -359,6 +389,7 @@ a {color:inherit;text-decoration:none}
 }
 
 .detail {
+ min-width:0;
  padding:30px 15px;
  border-radius:45px;
  background:linear-gradient(145deg,#fff,#f1e4ca);
@@ -390,18 +421,22 @@ a {color:inherit;text-decoration:none}
  box-shadow:0 8px 20px #80633a35;
  transition:.3s;
  margin:7px;
+ max-width:100%;
 }
 
 .action:hover {transform:translateY(-3px)}
 
 .gallery {
  display:grid;
- grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+ grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));
  gap:25px;
  padding:10px;
+ min-width:0;
 }
 
 .photo {
+ width:100%;
+ min-width:0;
  height:285px;
  padding:9px;
  border:0;
@@ -433,12 +468,15 @@ a {color:inherit;text-decoration:none}
 }
 
 .form {
+ width:100%;
  max-width:490px;
  margin:25px auto 0;
 }
 
 .form input,.form select {
+ display:block;
  width:100%;
+ max-width:100%;
  padding:15px 20px;
  margin:9px 0;
  border:1px solid #ddc99f;
@@ -461,7 +499,7 @@ a {color:inherit;text-decoration:none}
 
 .attendance-options {
  display:grid;
- grid-template-columns:1fr 1fr;
+ grid-template-columns:repeat(2,minmax(0,1fr));
  gap:12px;
  margin-top:12px;
 }
@@ -469,6 +507,7 @@ a {color:inherit;text-decoration:none}
 .attendance-option {
  position:relative;
  display:block;
+ min-width:0;
  cursor:pointer;
 }
 
@@ -577,22 +616,71 @@ a {color:inherit;text-decoration:none}
  to {transform:translateY(110vh) rotate(450deg)}
 }
 
-@media(max-width:600px) {
- .hero-card {padding:65px 18px}
- .section {
-  border-radius:38px;
-  padding:32px 16px;
- }
- .countdown {
-  gap:6px;
+/* تنظیم دقیق برای موبایل */
+@media screen and (max-width:768px) {
+ html,body {
+  width:100%;
   max-width:100%;
+  overflow-x:hidden;
  }
- .time strong {font-size:clamp(15px,4vw,21px)}
- .time small {font-size:clamp(9px,2.5vw,12px)}
+
+ #site {
+  width:100%;
+  max-width:100%;
+  overflow-x:clip;
+ }
+
+ .hero {
+  min-height:auto;
+  padding:35px 12px;
+ }
+
+ .hero-card {
+  width:100%;
+  padding:45px 15px;
+  border-radius:35px;
+ }
+
+ .section {
+  width:calc(100% - 24px);
+  max-width:calc(100% - 24px);
+  margin:35px auto;
+  padding:28px 12px;
+  border-radius:28px;
+ }
+
+ .countdown {
+  width:100%;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:5px;
+ }
+
+ .time {
+  width:100%;
+  min-width:0;
+ }
+
+ .details,.gallery {
+  grid-template-columns:minmax(0,1fr);
+ }
+
+ .attendance-options {
+  grid-template-columns:minmax(0,1fr);
+ }
+
+ .names {
+  font-size:clamp(42px,12vw,60px);
+ }
+
  .photo {height:240px}
- .names {font-size:57px}
- .attendance-options {grid-template-columns:1fr}
- .choice-card {min-height:82px}
+}
+
+@media(prefers-reduced-motion:reduce) {
+ *,*:before,*:after {
+  animation-duration:.01ms!important;
+  transition-duration:.01ms!important;
+  scroll-behavior:auto!important;
+ }
 }
 </style>
 </head>
