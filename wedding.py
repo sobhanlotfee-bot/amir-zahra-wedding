@@ -1,5 +1,5 @@
 
-from flask import Flask, request, redirect
+from flask import Flask, request
 from pathlib import Path
 from datetime import datetime
 import csv
@@ -56,6 +56,7 @@ def send_telegram_message(name, count, attendance):
 
     try:
         req = urllib.request.Request(url, data=data)
+
         with urllib.request.urlopen(req, timeout=10) as response:
             result = json.loads(response.read().decode("utf-8"))
 
@@ -72,20 +73,51 @@ def send_telegram_message(name, count, attendance):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+
+    # ثبت پاسخ بدون رفرش صفحه
     if request.method == "POST":
         name = request.form.get("name", "").strip()[:80]
         count = request.form.get("count", "1")
         attendance = request.form.get("attendance", "")
 
-        if name and count in ["1", "2", "3", "4", "5"] and attendance in ["yes", "no"]:
-            with open(BASE / "guests.csv", "a", newline="", encoding="utf-8-sig") as f:
+        if (
+            not name
+            or count not in ["1", "2", "3", "4", "5"]
+            or attendance not in ["yes", "no"]
+        ):
+            return {
+                "ok": False,
+                "message": "لطفاً اطلاعات را کامل و صحیح وارد کنید."
+            }, 400
+
+        try:
+            with open(
+                BASE / "guests.csv",
+                "a",
+                newline="",
+                encoding="utf-8-sig"
+            ) as f:
                 csv.writer(f).writerow([
-                    name, count, attendance, datetime.now().isoformat()
+                    name,
+                    count,
+                    attendance,
+                    datetime.now().isoformat()
                 ])
 
             send_telegram_message(name, count, attendance)
 
-        return redirect("/#rsvp")
+            return {
+                "ok": True,
+                "message": "پاسخ شما با موفقیت ثبت شد. سپاس از همراهی شما ❤️"
+            }
+
+        except Exception:
+            app.logger.exception("RSVP saving failed")
+
+            return {
+                "ok": False,
+                "message": "ثبت پاسخ با مشکل مواجه شد. لطفاً دوباره تلاش کنید."
+            }, 500
 
     photos = [
         f"/static/photo{i}.jpg"
@@ -551,6 +583,12 @@ img,video {max-width:100%;}
 
 .form-submit {width:100%;margin-top:20px;}
 
+.form-submit:disabled {
+ opacity:.7;
+ cursor:wait;
+ transform:none;
+}
+
 .footer {
  text-align:center;
  padding:50px 15px;
@@ -731,7 +769,7 @@ img,video {max-width:100%;}
  <div class="section-title">حضور شما مایه افتخار ماست</div>
  <p>لطفاً نام و تعداد مهمانان را وارد کنید و یکی از گزینه‌های زیر را انتخاب کنید.</p>
 
- <form class="form" method="POST">
+ <form class="form" id="rsvpForm">
   <input name="name" maxlength="80" placeholder="نام و نام خانوادگی" required>
 
   <select name="count" aria-label="تعداد مهمانان">
@@ -855,6 +893,40 @@ function closePhoto() {
 
 document.addEventListener("keydown", e => {
  if (e.key === "Escape") closePhoto();
+});
+
+// ثبت پاسخ بدون بارگذاری مجدد صفحه
+const rsvpForm = document.getElementById("rsvpForm");
+
+rsvpForm.addEventListener("submit", async function(e) {
+ e.preventDefault();
+
+ const submitButton = rsvpForm.querySelector(".form-submit");
+
+ submitButton.disabled = true;
+ submitButton.textContent = "در حال ثبت پاسخ...";
+
+ try {
+  const response = await fetch("/", {
+   method: "POST",
+   body: new FormData(rsvpForm)
+  });
+
+  const result = await response.json();
+
+  alert(result.message);
+
+  if (result.ok) {
+   rsvpForm.reset();
+  }
+
+ } catch (error) {
+  alert("ارتباط برقرار نشد. لطفاً دوباره تلاش کنید.");
+
+ } finally {
+  submitButton.disabled = false;
+  submitButton.textContent = "ثبت پاسخ";
+ }
 });
 
 for (let i = 0; i < 16; i++) {
