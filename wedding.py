@@ -12,8 +12,11 @@ app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
-STATIC_DIR.mkdir(exist_ok=True)
+FONT_DIR = STATIC_DIR / "fonts"
 GUESTS_FILE = BASE_DIR / "guests.csv"
+
+STATIC_DIR.mkdir(exist_ok=True)
+FONT_DIR.mkdir(exist_ok=True)
 
 WEDDING_DATE = "چهارشنبه ۲ دی ۱۴۰۵"
 ADDRESS = "سمنان، میدان معلم، بلوار بسیج، جنب ورزشگاه الغدیر، تالار پذیرایی فریال"
@@ -47,7 +50,8 @@ def send_telegram_message(name, count, attendance):
 
     try:
         req = urllib.request.Request(url, data=data)
-        urllib.request.urlopen(req, timeout=10)
+        with urllib.request.urlopen(req, timeout=10):
+            pass
     except Exception as error:
         print("Telegram error:", error)
 
@@ -63,23 +67,32 @@ PAGE = r"""<!DOCTYPE html>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+@font-face {
+    font-family: "IranNastaliq";
+    src: url("/static/fonts/IranNastaliq.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --paper: #f2e7d2;
     --paper-light: #fbf5e9;
-    --paper-deep: #e7d6b8;
-    --gold: #b99555;
-    --gold-dark: #866633;
+    --paper-dark: #e4d1ad;
+    --gold: #bd9852;
+    --gold-dark: #80602e;
     --wine: #762f40;
     --wine-dark: #4c1c2a;
     --ink: #49382d;
     --muted: #89745e;
-    --radius: 22px;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 html {
     scroll-behavior: smooth;
@@ -90,35 +103,27 @@ body {
     margin: 0;
     overflow-x: hidden;
     color: var(--ink);
-    font-family: "Vazirmatn", sans-serif;
+    font-family: "Vazirmatn", Tahoma, sans-serif;
     background:
-        radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.55), transparent 42%),
+        radial-gradient(ellipse at 12% 8%, rgba(255,255,255,.55), transparent 42%),
         radial-gradient(ellipse at 90% 85%, rgba(185,149,85,.12), transparent 40%),
         var(--paper);
 }
 
-body.locked { overflow: hidden; }
+body.locked {
+    overflow: hidden;
+}
 
-button, input, select { font: inherit; }
-button { cursor: pointer; }
+button, input, select {
+    font: inherit;
+}
 
 .nastaliq {
-    font-family: "Noto Nastaliq Urdu", serif;
-    font-weight: 500;
-    line-height: 2.15;
+    font-family: "IranNastaliq", "Noto Nastaliq Urdu", serif;
+    font-weight: normal;
+    line-height: 2.2;
+    padding-top: 5px;
 }
-
-.gold-text { color: var(--gold-dark); }
-
-.ornament {
-    text-align: center;
-    color: var(--gold-dark);
-    font-size: 19px;
-    letter-spacing: 7px;
-    margin: 16px 0;
-}
-
-/* بافت کاغذ */
 
 .paper-texture {
     background-color: var(--paper-light);
@@ -127,6 +132,14 @@ button { cursor: pointer; }
         radial-gradient(rgba(255,255,255,.4) .7px, transparent .8px),
         linear-gradient(135deg, rgba(255,255,255,.2), rgba(151,111,55,.035));
     background-size: 8px 8px, 13px 13px, 100% 100%;
+}
+
+.ornament {
+    text-align: center;
+    color: var(--gold-dark);
+    font-size: 22px;
+    letter-spacing: 7px;
+    margin: 15px 0;
 }
 
 /* ---------------- پاکت تمام صفحه ---------------- */
@@ -154,10 +167,10 @@ button { cursor: pointer; }
     position: absolute;
     inset: 0;
     overflow: hidden;
+    transform-style: preserve-3d;
     background:
         radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.5), transparent 65%),
         linear-gradient(145deg, #f8efdf, #e4d0ad);
-    transform-style: preserve-3d;
 }
 
 .envelope::before {
@@ -166,8 +179,9 @@ button { cursor: pointer; }
     inset: 11px;
     border: 1px solid rgba(164,125,57,.8);
     box-shadow: inset 0 0 0 4px rgba(255,255,255,.2);
-    z-index: 8;
+    z-index: 9;
     pointer-events: none;
+    border-radius: 4px;
 }
 
 .envelope::after {
@@ -175,8 +189,9 @@ button { cursor: pointer; }
     position: absolute;
     inset: 19px;
     border: 1px solid rgba(164,125,57,.28);
-    z-index: 8;
+    z-index: 9;
     pointer-events: none;
+    border-radius: 3px;
 }
 
 .envelope-paper {
@@ -190,7 +205,7 @@ button { cursor: pointer; }
 .intro-writing {
     position: absolute;
     z-index: 4;
-    top: 24%;
+    top: 22%;
     left: 8%;
     right: 8%;
     text-align: center;
@@ -198,14 +213,14 @@ button { cursor: pointer; }
 }
 
 .intro-small {
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 2px;
 }
 
 .intro-title {
-    font-size: clamp(35px, 10vw, 55px);
+    font-size: clamp(48px, 13vw, 72px);
     color: var(--wine);
-    margin: 22px 0;
+    margin: 25px 0 12px;
 }
 
 .intro-subtitle {
@@ -226,13 +241,11 @@ button { cursor: pointer; }
 .envelope-fold-left {
     left: 0;
     clip-path: polygon(0 0, 100% 100%, 0 100%);
-    filter: drop-shadow(2px -3px 5px rgba(75,50,25,.1));
 }
 
 .envelope-fold-right {
     right: 0;
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
-    filter: drop-shadow(-2px -3px 5px rgba(75,50,25,.1));
 }
 
 .envelope-bottom {
@@ -242,7 +255,6 @@ button { cursor: pointer; }
     background: linear-gradient(160deg, #ead9bc, #d9c29b);
     clip-path: polygon(0 100%, 50% 0, 100% 100%);
     z-index: 3;
-    filter: drop-shadow(0 -5px 9px rgba(80,50,20,.12));
 }
 
 .envelope-flap {
@@ -259,23 +271,15 @@ button { cursor: pointer; }
     filter: drop-shadow(0 8px 7px rgba(75,48,20,.15));
 }
 
-.envelope-flap::after {
-    content: "";
-    position: absolute;
-    inset: 10px 10px 0;
-    border-top: 1px solid rgba(189,152,82,.5);
-}
-
-/* مهر مومی ساده، بدون نوشته و نماد */
-
+/* مهر مومی ساده، بدون نوشته و نقش */
 .seal-button {
     position: absolute;
     z-index: 10;
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 116px;
-    height: 116px;
+    width: 118px;
+    height: 118px;
     padding: 0;
     border: 0;
     border-radius: 48% 52% 47% 53% / 52% 46% 54% 48%;
@@ -297,18 +301,14 @@ button { cursor: pointer; }
     position: absolute;
     inset: 9px;
     border: 1px solid rgba(224,185,142,.3);
-    border-radius: 48% 52% 47% 53% / 52% 46% 54% 48%;
+    border-radius: inherit;
     box-shadow: inset 0 0 8px rgba(35,0,10,.2);
-}
-
-.seal-button:active {
-    transform: translate(-50%, -50%) scale(.94);
 }
 
 .open-hint {
     position: absolute;
     z-index: 8;
-    top: calc(55% + 100px);
+    top: calc(55% + 105px);
     left: 0;
     right: 0;
     text-align: center;
@@ -318,7 +318,7 @@ button { cursor: pointer; }
 }
 
 @keyframes breathe {
-    0%, 100% { opacity: .55; transform: translateY(0); }
+    0%,100% { opacity: .55; transform: translateY(0); }
     50% { opacity: 1; transform: translateY(-4px); }
 }
 
@@ -347,9 +347,11 @@ button { cursor: pointer; }
 @keyframes foldLeft {
     to { transform: translateX(-110%) rotateY(-30deg); opacity: .2; }
 }
+
 @keyframes foldRight {
     to { transform: translateX(110%) rotateY(30deg); opacity: .2; }
 }
+
 @keyframes foldBottom {
     to { transform: translateY(110%) rotateX(35deg); opacity: .2; }
 }
@@ -385,7 +387,7 @@ button { cursor: pointer; }
     position: absolute;
     inset: 9px;
     border: 1px solid rgba(189,152,82,.65);
-    border-radius: 5px;
+    border-radius: 17px;
     pointer-events: none;
     z-index: 10;
 }
@@ -395,7 +397,7 @@ button { cursor: pointer; }
     position: absolute;
     inset: 17px;
     border: 1px solid rgba(133,100,46,.2);
-    border-radius: 4px;
+    border-radius: 13px;
     pointer-events: none;
     z-index: 10;
 }
@@ -423,15 +425,16 @@ section {
 }
 
 .hero-names {
-    font-size: clamp(43px, 12vw, 68px);
+    font-size: clamp(65px, 16vw, 100px);
     color: var(--wine);
-    margin: 18px 0 6px;
+    margin: 5px 0;
+    line-height: 1.8;
 }
 
 .hero-and {
     color: var(--gold-dark);
     font-size: 20px;
-    margin: 0;
+    margin: -5px 0;
 }
 
 .hero-description {
@@ -451,7 +454,7 @@ section {
 }
 
 .section-title {
-    font-size: clamp(28px, 7vw, 39px);
+    font-size: clamp(37px, 9vw, 53px);
     color: var(--wine);
     margin: 0 0 10px;
 }
@@ -483,8 +486,6 @@ section {
     background: linear-gradient(to right, transparent, var(--gold));
 }
 
-/* کارت‌های گرد و لطیف */
-
 .ornate-card,
 .address-card,
 .rsvp-card {
@@ -493,7 +494,7 @@ section {
     margin: 27px auto;
     max-width: 550px;
     border: 1px solid rgba(185,149,85,.8);
-    border-radius: 25px;
+    border-radius: 27px;
     background: rgba(255,250,239,.67);
     box-shadow: 0 10px 28px rgba(70,45,20,.08);
 }
@@ -506,10 +507,17 @@ section {
     font-size: 19px;
 }
 
-.ornate-card::before { top: 10px; right: 15px; }
-.ornate-card::after { bottom: 10px; left: 15px; }
+.ornate-card::before {
+    top: 10px;
+    right: 15px;
+}
 
-/* ---------------- روزشمار ---------------- */
+.ornate-card::after {
+    bottom: 10px;
+    left: 15px;
+}
+
+/* ---------------- روزشمار مخفی زیر مه ---------------- */
 
 .countdown-card {
     max-width: 550px;
@@ -518,13 +526,13 @@ section {
     padding: 34px 16px 28px;
     overflow: hidden;
     border: 1px solid var(--gold);
-    border-radius: 28px;
+    border-radius: 30px;
     background: linear-gradient(145deg, #f8f0df, #e9d8b8);
     box-shadow: 0 12px 28px rgba(80,50,20,.1);
 }
 
 .countdown-title {
-    font-size: 22px;
+    font-size: 34px;
     color: var(--wine);
     margin-bottom: 22px;
 }
@@ -570,7 +578,7 @@ section {
     height: 100%;
     z-index: 5;
     cursor: crosshair;
-    touch-action: pan-y;
+    touch-action: none;
 }
 
 .fog-hint {
@@ -582,7 +590,7 @@ section {
     pointer-events: none;
 }
 
-/* ---------------- عکس‌ها ---------------- */
+/* ---------------- گالری ---------------- */
 
 .gallery-grid {
     display: grid;
@@ -596,7 +604,7 @@ section {
     position: relative;
     width: 100%;
     padding: 9px;
-    border-radius: 24px;
+    border-radius: 26px;
     background: linear-gradient(145deg, #fff8e9, #d8c194);
     border: 1px solid var(--gold);
     box-shadow: 0 12px 28px rgba(67,43,24,.13);
@@ -622,16 +630,16 @@ section {
     max-height: 620px;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-radius: 17px;
+    border-radius: 19px;
     border: 1px solid rgba(133,100,46,.35);
     cursor: zoom-in;
 }
 
 .gallery-caption {
-    font-family: "Noto Nastaliq Urdu", serif;
+    font-family: "IranNastaliq", serif;
     color: var(--gold-dark);
     padding: 8px 0 2px;
-    font-size: 15px;
+    font-size: 25px;
 }
 
 #lightbox {
@@ -645,14 +653,16 @@ section {
     padding: 18px;
 }
 
-#lightbox.show { display: flex; }
+#lightbox.show {
+    display: flex;
+}
 
 #lightbox img {
     max-width: 96%;
     max-height: 88vh;
     object-fit: contain;
     border: 4px solid var(--gold);
-    border-radius: 18px;
+    border-radius: 20px;
     box-shadow: 0 0 35px rgba(0,0,0,.4);
 }
 
@@ -676,7 +686,7 @@ section {
     margin: 28px auto;
     padding: 8px;
     background: linear-gradient(145deg, #e7d3a8, #a9823e);
-    border-radius: 25px;
+    border-radius: 27px;
     box-shadow: 0 12px 28px rgba(70,45,20,.13);
 }
 
@@ -685,17 +695,17 @@ section {
     width: 100%;
     max-height: 560px;
     background: #241a18;
-    border-radius: 18px;
+    border-radius: 20px;
 }
 
-/* ---------------- تاریخ ---------------- */
+/* ---------------- تقویم ---------------- */
 
 .calendar-card {
     width: min(100%, 350px);
     margin: 30px auto;
     overflow: hidden;
     border: 1px solid var(--gold);
-    border-radius: 25px;
+    border-radius: 27px;
     background: #fbf4e7;
     box-shadow: 0 13px 28px rgba(67,43,24,.12);
     transform-style: preserve-3d;
@@ -709,10 +719,12 @@ section {
     letter-spacing: 2px;
 }
 
-.calendar-body { padding: 24px 12px; }
+.calendar-body {
+    padding: 24px 12px;
+}
 
 .calendar-day {
-    font-size: 65px;
+    font-size: 90px;
     color: var(--wine);
     line-height: 1.4;
 }
@@ -738,7 +750,7 @@ section {
     100% { transform: rotateX(0); }
 }
 
-/* ---------------- آدرس ---------------- */
+/* ---------------- نشانی و فرم ---------------- */
 
 .address-icon {
     width: 68px;
@@ -784,8 +796,6 @@ section {
     box-shadow: 0 10px 20px rgba(70,45,20,.2);
 }
 
-/* ---------------- فرم پاسخ ---------------- */
-
 .form-group {
     text-align: right;
     margin: 18px 0;
@@ -805,7 +815,7 @@ section {
     color: var(--ink);
     background: #fffaf0;
     border: 1px solid #c9ad76;
-    border-radius: 14px;
+    border-radius: 15px;
     outline: none;
 }
 
@@ -820,19 +830,18 @@ section {
     border-radius: 30px;
     font-weight: 500;
     font-size: 15px;
+    cursor: pointer;
 }
 
 .success-message {
     color: #477044;
     background: #edf4e7;
     border: 1px solid #a9c59a;
-    border-radius: 14px;
+    border-radius: 15px;
     padding: 13px;
     margin-bottom: 18px;
     font-size: 13px;
 }
-
-/* ---------------- پایان ---------------- */
 
 .footer {
     padding: 55px 20px 75px;
@@ -841,7 +850,7 @@ section {
 }
 
 .footer-names {
-    font-size: 36px;
+    font-size: 58px;
     color: var(--wine);
     margin: 8px 0;
 }
@@ -856,7 +865,9 @@ section {
 .reveal {
     opacity: 0;
     transform: translateY(24px);
-    transition: opacity .85s ease, transform .85s cubic-bezier(.2,.7,.2,1);
+    transition:
+        opacity .85s ease,
+        transform .85s cubic-bezier(.2,.7,.2,1);
 }
 
 .reveal.visible {
@@ -876,11 +887,21 @@ section {
 }
 
 @media (max-width: 380px) {
-    section { padding: 55px 20px; }
-    .countdown-grid { gap: 4px; }
-    .time-label { font-size: 9px; }
-    .time-number { font-size: 21px; }
-    .seal-button { width: 104px; height: 104px; }
+    section {
+        padding: 55px 20px;
+    }
+
+    .countdown-grid {
+        gap: 5px;
+    }
+
+    .time-label {
+        font-size: 9px;
+    }
+
+    .time-number {
+        font-size: 20px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -898,13 +919,14 @@ section {
 
 <body class="locked">
 
+<!-- پاکت دعوت‌نامه -->
 <div id="intro">
     <div class="envelope">
         <div class="envelope-paper"></div>
 
         <div class="intro-writing">
-            <div class="intro-small">با عشق و احترام تقدیم می‌شود</div>
-            <div class="intro-title nastaliq">دعوت‌نامه</div>
+            <div class="intro-small">دعوت‌نامه‌ای از جنس عشق</div>
+            <div class="intro-title nastaliq">امیر و زهرا</div>
             <div class="intro-subtitle">برای یک شب به‌یادماندنی</div>
         </div>
 
@@ -913,19 +935,27 @@ section {
         <div class="envelope-bottom"></div>
         <div class="envelope-flap"></div>
 
-        <button class="seal-button" id="openSeal" aria-label="باز کردن دعوت‌نامه"></button>
+        <button
+            class="seal-button"
+            id="openSeal"
+            aria-label="باز کردن دعوت‌نامه">
+        </button>
+
         <div class="open-hint">برای گشودن دعوت‌نامه لمس کنید</div>
     </div>
 </div>
 
+<!-- محتوای اصلی -->
 <div id="main-site">
 <div class="page-paper paper-texture">
 
     <section class="hero">
         <div class="hero-kicker reveal">به نام عشق و زیبایی</div>
+
         <div class="hero-names nastaliq reveal">امیر</div>
         <div class="hero-and reveal">و</div>
         <div class="hero-names nastaliq reveal">زهرا</div>
+
         <div class="ornament reveal">❦ ✧ ❦</div>
 
         <p class="hero-description reveal">
@@ -934,9 +964,12 @@ section {
             حضور شما، زیبایی این شب را دوچندان خواهد کرد.
         </p>
 
-        <div class="scroll-cue">برای دیدن دعوت‌نامه به پایین بروید ↓</div>
+        <div class="scroll-cue">
+            برای دیدن دعوت‌نامه به پایین بروید ↓
+        </div>
     </section>
 
+    <!-- روزشمار -->
     <section>
         <div class="reveal">
             <div class="section-title nastaliq">شمارش تا قرار عاشقانه</div>
@@ -954,14 +987,17 @@ section {
                     <div class="time-number" id="days">۰۰</div>
                     <div class="time-label">روز</div>
                 </div>
+
                 <div class="time-unit">
                     <div class="time-number" id="hours">۰۰</div>
                     <div class="time-label">ساعت</div>
                 </div>
+
                 <div class="time-unit">
                     <div class="time-number" id="minutes">۰۰</div>
                     <div class="time-label">دقیقه</div>
                 </div>
+
                 <div class="time-unit">
                     <div class="time-number" id="seconds">۰۰</div>
                     <div class="time-label">ثانیه</div>
@@ -973,28 +1009,35 @@ section {
         </div>
     </section>
 
+    <!-- گالری -->
     <section>
         <div class="reveal">
             <div class="section-title nastaliq">لحظه‌های ما</div>
             <div class="divider-ornament">❦</div>
-            <p class="section-subtitle">قاب‌هایی از خاطرات و لحظه‌های دوست‌داشتنی</p>
+            <p class="section-subtitle">
+                قاب‌هایی از خاطرات و لحظه‌های دوست‌داشتنی
+            </p>
         </div>
-        <div class="gallery-grid">
-            {{GALLERY}}
-        </div>
+
+        <div class="gallery-grid">{{GALLERY}}</div>
     </section>
 
+    <!-- ویدئو در صورت وجود -->
     {{VIDEO}}
 
+    <!-- تاریخ مراسم -->
     <section>
         <div class="reveal">
             <div class="section-title nastaliq">قرار دیدار ما</div>
             <div class="divider-ornament">❦</div>
-            <p class="section-subtitle">منتظر قدم‌های پرمهر شما هستیم</p>
+            <p class="section-subtitle">
+                منتظر قدم‌های پرمهر شما هستیم
+            </p>
         </div>
 
         <div class="calendar-card reveal" id="calendarCard">
             <div class="calendar-top">روز پیوند عشق</div>
+
             <div class="calendar-body">
                 <div class="calendar-day nastaliq">۲</div>
                 <div class="calendar-month">دی ماه</div>
@@ -1007,10 +1050,11 @@ section {
         <div class="ornate-card reveal">
             <div class="section-subtitle">چهارشنبه</div>
             <div class="section-title nastaliq">۲ دی ۱۴۰۵</div>
-            <div class="gold-text">ساعت ۱۹ تا ۲۲</div>
+            <div>ساعت ۱۹ تا ۲۲</div>
         </div>
     </section>
 
+    <!-- نشانی -->
     <section>
         <div class="reveal">
             <div class="section-title nastaliq">نشانی جشن</div>
@@ -1019,20 +1063,30 @@ section {
 
         <div class="address-card reveal">
             <div class="address-icon">⌖</div>
+
             <div class="section-title nastaliq">تالار پذیرایی فریال</div>
+
             <p class="address-text">{{ADDRESS}}</p>
-            <a class="map-button" href="{{MAP_URL}}" target="_blank" rel="noopener">
+
+            <a
+                class="map-button"
+                href="{{MAP_URL}}"
+                target="_blank"
+                rel="noopener">
                 <span>⌖</span>
                 مشاهده مسیر روی نقشه
             </a>
         </div>
     </section>
 
+    <!-- فرم اعلام حضور -->
     <section>
         <div class="reveal">
             <div class="section-title nastaliq">پاسخ به دعوت</div>
             <div class="divider-ornament">❦</div>
-            <p class="section-subtitle">لطفاً ما را از افتخار حضورتان باخبر کنید</p>
+            <p class="section-subtitle">
+                لطفاً ما را از افتخار حضورتان باخبر کنید
+            </p>
         </div>
 
         <div class="rsvp-card reveal">
@@ -1041,8 +1095,13 @@ section {
             <form method="POST" action="/">
                 <div class="form-group">
                     <label for="guestName">نام و نام خانوادگی</label>
-                    <input id="guestName" name="name" type="text"
-                           placeholder="نام شما" maxlength="100" required>
+                    <input
+                        id="guestName"
+                        name="name"
+                        type="text"
+                        placeholder="نام شما"
+                        maxlength="100"
+                        required>
                 </div>
 
                 <div class="form-group">
@@ -1060,12 +1119,18 @@ section {
                 <div class="form-group">
                     <label for="attendance">وضعیت حضور شما</label>
                     <select id="attendance" name="attendance" required>
-                        <option value="با افتخار می‌آیم">با افتخار می‌آیم ❤️</option>
-                        <option value="متأسفانه امکان حضور ندارم">متأسفانه امکان حضور ندارم</option>
+                        <option value="با افتخار می‌آیم">
+                            با افتخار می‌آیم ❤️
+                        </option>
+                        <option value="متأسفانه امکان حضور ندارم">
+                            متأسفانه امکان حضور ندارم
+                        </option>
                     </select>
                 </div>
 
-                <button class="submit-button" type="submit">❦ ثبت پاسخ دعوت ❦</button>
+                <button class="submit-button" type="submit">
+                    ❦ ثبت پاسخ دعوت ❦
+                </button>
             </form>
         </div>
     </section>
@@ -1081,11 +1146,15 @@ section {
 </div>
 </div>
 
+<!-- نمایش بزرگ تصاویر -->
 <div id="lightbox">
-    <button class="lightbox-close" id="closeLightbox" aria-label="بستن">×</button>
+    <button class="lightbox-close" id="closeLightbox" aria-label="بستن">
+        ×
+    </button>
     <img id="lightboxImage" src="" alt="تصویر بزرگ‌شده">
 </div>
 
+<!-- موزیک -->
 <audio id="weddingMusic" loop preload="auto">
     <source src="/static/music.mp3" type="audio/mpeg">
 </audio>
@@ -1100,8 +1169,8 @@ let opened = false;
 
 openSeal.addEventListener("click", () => {
     if (opened) return;
-    opened = true;
 
+    opened = true;
     intro.classList.add("opening");
 
     music.volume = 0.45;
@@ -1116,38 +1185,45 @@ openSeal.addEventListener("click", () => {
     }, 1900);
 });
 
-
 /* شمارش معکوس: ۲۳ دسامبر ۲۰۲۶، ساعت ۱۹ به وقت ایران */
-
-const weddingDate = new Date("2026-12-23T19:00:00+03:30").getTime();
+const weddingDate = new Date(
+    "2026-12-23T19:00:00+03:30"
+).getTime();
 
 const persianDigits = number =>
     String(number).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
 
 function updateCountdown() {
-    let distance = Math.max(0, weddingDate - Date.now());
+    const distance = Math.max(0, weddingDate - Date.now());
 
     const days = Math.floor(distance / 86400000);
     const hours = Math.floor((distance / 3600000) % 24);
     const minutes = Math.floor((distance / 60000) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    document.getElementById("days").textContent = persianDigits(days);
-    document.getElementById("hours").textContent = persianDigits(hours);
-    document.getElementById("minutes").textContent = persianDigits(minutes);
-    document.getElementById("seconds").textContent = persianDigits(seconds);
+    document.getElementById("days").textContent =
+        persianDigits(days);
+
+    document.getElementById("hours").textContent =
+        persianDigits(hours);
+
+    document.getElementById("minutes").textContent =
+        persianDigits(minutes);
+
+    document.getElementById("seconds").textContent =
+        persianDigits(seconds);
 }
 
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
 
-/* مه ظریف روزشمار */
-
+/* مه روزشمار: با لمس و کشیدن انگشت یا ماوس پاک می‌شود */
 let fogInitialized = false;
 
 function initFog() {
     if (fogInitialized) return;
+
     fogInitialized = true;
 
     const canvas = document.getElementById("fogCanvas");
@@ -1168,12 +1244,16 @@ function initFog() {
 
         canvas.width = Math.round(width * dpr);
         canvas.height = Math.round(height * dpr);
+
         canvas.style.width = width + "px";
         canvas.style.height = height + "px";
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        const gradient = ctx.createLinearGradient(
+            0, 0, width, height
+        );
+
         gradient.addColorStop(0, "rgba(241,229,205,.97)");
         gradient.addColorStop(.5, "rgba(231,216,187,.96)");
         gradient.addColorStop(1, "rgba(247,237,216,.97)");
@@ -1190,6 +1270,7 @@ function initFog() {
 
     function getPoint(event) {
         const rect = canvas.getBoundingClientRect();
+
         return {
             x: event.clientX - rect.left,
             y: event.clientY - rect.top
@@ -1200,11 +1281,15 @@ function initFog() {
         ctx.save();
         ctx.globalCompositeOperation = "destination-out";
 
-        // شعاع کوچک‌تر برای پاک شدن ظریف‌تر مه
         const radius = 25;
+
         const gradient = ctx.createRadialGradient(
-            point.x, point.y, 3,
-            point.x, point.y, radius
+            point.x,
+            point.y,
+            3,
+            point.x,
+            point.y,
+            radius
         );
 
         gradient.addColorStop(0, "rgba(0,0,0,1)");
@@ -1220,6 +1305,7 @@ function initFog() {
 
     canvas.addEventListener("pointerdown", event => {
         drawing = true;
+        canvas.setPointerCapture(event.pointerId);
         lastPoint = getPoint(event);
         eraseAt(lastPoint);
     });
@@ -1232,7 +1318,7 @@ function initFog() {
         if (lastPoint) {
             const dx = point.x - lastPoint.x;
             const dy = point.y - lastPoint.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const distance = Math.hypot(dx, dy);
             const steps = Math.max(1, Math.ceil(distance / 10));
 
             for (let i = 1; i <= steps; i++) {
@@ -1253,48 +1339,53 @@ function initFog() {
 
     canvas.addEventListener("pointerup", stopDrawing);
     canvas.addEventListener("pointercancel", stopDrawing);
-    canvas.addEventListener("pointerleave", stopDrawing);
 
     resizeCanvas();
-
     window.addEventListener("resize", resizeCanvas);
 }
 
 
 /* نمایان شدن بخش‌ها هنگام اسکرول */
+if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.12 }
+    );
 
-const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            revealObserver.unobserve(entry.target);
-        }
+    document.querySelectorAll(".reveal").forEach(element => {
+        revealObserver.observe(element);
     });
-}, { threshold: 0.12 });
 
-document.querySelectorAll(".reveal").forEach(element => {
-    revealObserver.observe(element);
-});
+    const calendar = document.getElementById("calendarCard");
 
+    const calendarObserver = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    calendar.classList.add("animate");
+                    calendarObserver.unobserve(calendar);
+                }
+            });
+        },
+        { threshold: 0.5 }
+    );
 
-/* افکت تقویم */
-
-const calendar = document.getElementById("calendarCard");
-
-const calendarObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            calendar.classList.add("animate");
-            calendarObserver.unobserve(calendar);
-        }
+    calendarObserver.observe(calendar);
+} else {
+    document.querySelectorAll(".reveal").forEach(element => {
+        element.classList.add("visible");
     });
-}, { threshold: 0.5 });
-
-calendarObserver.observe(calendar);
+}
 
 
 /* نمایش بزرگ عکس‌ها */
-
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightboxImage");
 
@@ -1310,14 +1401,21 @@ function closeLightbox() {
     lightboxImage.src = "";
 }
 
-document.getElementById("closeLightbox").addEventListener("click", closeLightbox);
+document.getElementById("closeLightbox").addEventListener(
+    "click",
+    closeLightbox
+);
 
 lightbox.addEventListener("click", event => {
-    if (event.target === lightbox) closeLightbox();
+    if (event.target === lightbox) {
+        closeLightbox();
+    }
 });
 
 document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeLightbox();
+    if (event.key === "Escape") {
+        closeLightbox();
+    }
 });
 </script>
 
@@ -1342,13 +1440,17 @@ def build_gallery():
     for index, filename in enumerate(photo_names, start=1):
         if (STATIC_DIR / filename).exists():
             safe_name = html.escape(filename, quote=True)
+
             items.append(
                 f"""
                 <div class="gallery-item">
-                    <img src="/static/{safe_name}"
-                         alt="تصویر خاطره {index}"
-                         loading="lazy">
-                    <div class="gallery-caption">خاطره‌ای از عشق</div>
+                    <img
+                        src="/static/{safe_name}"
+                        alt="تصویر خاطره {index}"
+                        loading="lazy">
+                    <div class="gallery-caption">
+                        خاطره‌ای از عشق
+                    </div>
                 </div>
                 """
             )
@@ -1356,7 +1458,9 @@ def build_gallery():
     if not items:
         return """
         <div class="ornate-card">
-            <p>تصاویر زیبای شما به‌زودی در این قسمت قرار می‌گیرند.</p>
+            <p>
+                تصاویر زیبای شما به‌زودی در این قسمت قرار می‌گیرند.
+            </p>
         </div>
         """
 
@@ -1370,12 +1474,17 @@ def build_video():
     return """
     <section>
         <div class="reveal">
-            <div class="section-title nastaliq">لحظه‌ای برای تماشا</div>
+            <div class="section-title nastaliq">
+                لحظه‌ای برای تماشا
+            </div>
             <div class="divider-ornament">❦</div>
         </div>
+
         <div class="video-frame reveal">
             <video controls playsinline preload="metadata">
-                <source src="/static/wedding.mp4" type="video/mp4">
+                <source
+                    src="/static/wedding.mp4"
+                    type="video/mp4">
                 مرورگر شما از پخش ویدئو پشتیبانی نمی‌کند.
             </video>
         </div>
@@ -1393,8 +1502,12 @@ def home():
         attendance = request.form.get("attendance", "").strip()
 
         allowed_counts = {
-            "۱ نفر", "۲ نفر", "۳ نفر",
-            "۴ نفر", "۵ نفر", "بیش از ۵ نفر"
+            "۱ نفر",
+            "۲ نفر",
+            "۳ نفر",
+            "۴ نفر",
+            "۵ نفر",
+            "بیش از ۵ نفر"
         }
 
         allowed_attendance = {
@@ -1421,7 +1534,10 @@ def home():
 
                     if not file_exists:
                         writer.writerow([
-                            "نام", "تعداد نفرات", "وضعیت حضور", "زمان ثبت"
+                            "نام",
+                            "تعداد نفرات",
+                            "وضعیت حضور",
+                            "زمان ثبت"
                         ])
 
                     writer.writerow([
@@ -1431,21 +1547,29 @@ def home():
                         datetime.now().isoformat(timespec="seconds")
                     ])
 
-                send_telegram_message(name, count, attendance)
+                send_telegram_message(
+                    name,
+                    count,
+                    attendance
+                )
 
                 success = (
                     '<div class="success-message">'
-                    'پاسخ شما با موفقیت ثبت شد. از محبتتان سپاسگزاریم ❤️'
+                    'پاسخ شما با موفقیت ثبت شد. '
+                    'از محبتتان سپاسگزاریم ❤️'
                     '</div>'
                 )
 
             except Exception as error:
                 print("RSVP save error:", error)
+
                 success = (
                     '<div class="success-message">'
-                    'ثبت پاسخ با مشکل روبه‌رو شد. لطفاً دوباره تلاش کنید.'
+                    'ثبت پاسخ با مشکل روبه‌رو شد. '
+                    'لطفاً دوباره تلاش کنید.'
                     '</div>'
                 )
+
         else:
             success = (
                 '<div class="success-message">'
@@ -1454,15 +1578,23 @@ def home():
             )
 
     page = PAGE
+
     page = page.replace("{{GALLERY}}", build_gallery())
     page = page.replace("{{VIDEO}}", build_video())
     page = page.replace("{{DATE}}", html.escape(WEDDING_DATE))
     page = page.replace("{{ADDRESS}}", html.escape(ADDRESS))
-    page = page.replace("{{MAP_URL}}", html.escape(MAP_URL, quote=True))
+    page = page.replace(
+        "{{MAP_URL}}",
+        html.escape(MAP_URL, quote=True)
+    )
     page = page.replace("{{SUCCESS}}", success)
 
     return page
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
