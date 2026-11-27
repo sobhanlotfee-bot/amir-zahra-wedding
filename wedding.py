@@ -1,5 +1,5 @@
 
-from flask import Flask, request, redirect
+from flask import Flask, request
 from pathlib import Path
 from datetime import datetime
 import csv
@@ -7,18 +7,15 @@ import html
 import os
 import urllib.request
 import urllib.parse
-import json
 
 app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 STATIC_DIR.mkdir(exist_ok=True)
-
 GUESTS_FILE = BASE_DIR / "guests.csv"
 
 WEDDING_DATE = "چهارشنبه ۲ دی ۱۴۰۵"
-WEDDING_TIME = "۱۹ تا ۲۲"
 ADDRESS = "سمنان، میدان معلم، بلوار بسیج، جنب ورزشگاه الغدیر، تالار پذیرایی فریال"
 
 MAP_URL = (
@@ -27,9 +24,6 @@ MAP_URL = (
     "&travelmode=driving&dir_action=navigate"
 )
 
-# --------------------------------------------------
-# ارسال پیام تلگرام
-# --------------------------------------------------
 
 def send_telegram_message(name, count, attendance):
     token = os.environ.get("BOT_TOKEN")
@@ -46,7 +40,6 @@ def send_telegram_message(name, count, attendance):
     )
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-
     data = urllib.parse.urlencode({
         "chat_id": chat_id,
         "text": message
@@ -59,18 +52,14 @@ def send_telegram_message(name, count, attendance):
         print("Telegram error:", error)
 
 
-# --------------------------------------------------
-# محتوای صفحه
-# --------------------------------------------------
-
 PAGE = r"""<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#f3e8d2">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2e7d2">
 <meta name="description" content="دعوت‌نامه عروسی امیر و زهرا">
-<title>دعوت‌نامه عروسی امیر و زهرا</title>
+<title>عروسی امیر و زهرا</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,22 +67,19 @@ PAGE = r"""<!DOCTYPE html>
 
 <style>
 :root {
-    --paper: #f3e8d2;
-    --paper-light: #fbf4e7;
-    --paper-dark: #e5d3b3;
-    --gold: #bd9852;
-    --gold-light: #dfc58c;
-    --gold-dark: #85642e;
-    --wine: #762d3c;
+    --paper: #f2e7d2;
+    --paper-light: #fbf5e9;
+    --paper-deep: #e7d6b8;
+    --gold: #b99555;
+    --gold-dark: #866633;
+    --wine: #762f40;
     --wine-dark: #4c1c2a;
     --ink: #49382d;
-    --muted: #806b56;
-    --shadow: rgba(67, 43, 24, .2);
+    --muted: #89745e;
+    --radius: 22px;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html {
     scroll-behavior: smooth;
@@ -102,82 +88,48 @@ html {
 
 body {
     margin: 0;
+    overflow-x: hidden;
     color: var(--ink);
     font-family: "Vazirmatn", sans-serif;
     background:
-        radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.55), transparent 40%),
-        radial-gradient(ellipse at 90% 80%, rgba(189,152,82,.12), transparent 45%),
+        radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.55), transparent 42%),
+        radial-gradient(ellipse at 90% 85%, rgba(185,149,85,.12), transparent 40%),
         var(--paper);
-    overflow-x: hidden;
 }
 
-body.locked {
-    overflow: hidden;
-}
+body.locked { overflow: hidden; }
 
-button, input, select {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
 
 .nastaliq {
     font-family: "Noto Nastaliq Urdu", serif;
     font-weight: 500;
-    line-height: 2.2;
+    line-height: 2.15;
 }
 
-.gold-text {
-    color: var(--gold-dark);
-}
+.gold-text { color: var(--gold-dark); }
 
 .ornament {
-    color: var(--gold-dark);
-    letter-spacing: 8px;
     text-align: center;
+    color: var(--gold-dark);
     font-size: 19px;
-    margin: 12px 0;
+    letter-spacing: 7px;
+    margin: 16px 0;
 }
+
+/* بافت کاغذ */
 
 .paper-texture {
     background-color: var(--paper-light);
     background-image:
-        radial-gradient(rgba(111,77,39,.09) .6px, transparent .7px),
-        radial-gradient(rgba(255,255,255,.45) .7px, transparent .8px),
-        linear-gradient(135deg, rgba(255,255,255,.25), rgba(151,111,55,.04));
-    background-size: 7px 7px, 11px 11px, 100% 100%;
+        radial-gradient(rgba(111,77,39,.07) .6px, transparent .7px),
+        radial-gradient(rgba(255,255,255,.4) .7px, transparent .8px),
+        linear-gradient(135deg, rgba(255,255,255,.2), rgba(151,111,55,.035));
+    background-size: 8px 8px, 13px 13px, 100% 100%;
 }
 
-.gold-frame {
-    position: relative;
-    border: 1px solid var(--gold);
-    outline: 1px solid rgba(189,152,82,.45);
-    outline-offset: 5px;
-}
-
-.gold-frame::before,
-.gold-frame::after {
-    content: "❦";
-    position: absolute;
-    color: var(--gold-dark);
-    font-size: 22px;
-    z-index: 2;
-}
-
-.gold-frame::before {
-    top: -15px;
-    right: -12px;
-}
-
-.gold-frame::after {
-    bottom: -15px;
-    left: -12px;
-    transform: rotate(180deg);
-}
-
-/* ----------------- پاکت تمام صفحه ----------------- */
+/* ---------------- پاکت تمام صفحه ---------------- */
 
 #intro {
     position: fixed;
@@ -187,9 +139,8 @@ button {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-    background:
-        radial-gradient(ellipse at center, #f8efdF 0%, #e8d6b7 100%);
     perspective: 1400px;
+    background: #e8d8bc;
     transition: opacity 1s ease, visibility 1s ease;
 }
 
@@ -204,97 +155,42 @@ button {
     inset: 0;
     overflow: hidden;
     background:
-        radial-gradient(ellipse at 50% 45%, rgba(255,255,255,.5), transparent 65%),
-        linear-gradient(145deg, #f7eedc, #e5d2b1);
+        radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.5), transparent 65%),
+        linear-gradient(145deg, #f8efdf, #e4d0ad);
     transform-style: preserve-3d;
 }
 
 .envelope::before {
     content: "";
     position: absolute;
-    inset: 12px;
-    border: 1px solid var(--gold);
-    box-shadow:
-        inset 0 0 0 4px rgba(255,255,255,.25),
-        inset 0 0 0 6px rgba(189,152,82,.28);
+    inset: 11px;
+    border: 1px solid rgba(164,125,57,.8);
+    box-shadow: inset 0 0 0 4px rgba(255,255,255,.2);
+    z-index: 8;
     pointer-events: none;
-    z-index: 5;
 }
 
 .envelope::after {
     content: "";
     position: absolute;
-    inset: 22px;
-    border: 1px solid rgba(133,100,46,.35);
+    inset: 19px;
+    border: 1px solid rgba(164,125,57,.28);
+    z-index: 8;
     pointer-events: none;
-    z-index: 5;
 }
 
 .envelope-paper {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.4), transparent 60%),
-        repeating-linear-gradient(0deg, transparent 0 4px, rgba(110,80,40,.018) 5px);
-}
-
-.envelope-fold-left,
-.envelope-fold-right {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 72%;
-    background: linear-gradient(145deg, #f6ecd9, #e5d2b2);
-    z-index: 2;
-}
-
-.envelope-fold-left {
-    left: 0;
-    clip-path: polygon(0 0, 100% 100%, 0 100%);
-    filter: drop-shadow(2px -3px 5px rgba(75,50,25,.12));
-}
-
-.envelope-fold-right {
-    right: 0;
-    clip-path: polygon(100% 0, 100% 100%, 0 100%);
-    filter: drop-shadow(-2px -3px 5px rgba(75,50,25,.12));
-}
-
-.envelope-bottom {
-    position: absolute;
-    inset: auto 0 0;
-    height: 72%;
-    background: linear-gradient(160deg, #ead9bc, #d9c29b);
-    clip-path: polygon(0 100%, 50% 0, 100% 100%);
-    z-index: 3;
-    filter: drop-shadow(0 -5px 9px rgba(80,50,20,.14));
-}
-
-.envelope-flap {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 57%;
-    background: linear-gradient(160deg, #fbf3e4, #e8d6b7);
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: top center;
-    z-index: 6;
-    transition: transform 1.65s cubic-bezier(.68,-.08,.22,1);
-    filter: drop-shadow(0 8px 7px rgba(75,48,20,.16));
-}
-
-.envelope-flap::after {
-    content: "";
-    position: absolute;
-    inset: 10px 10px 0;
-    border-top: 1px solid rgba(189,152,82,.55);
+        radial-gradient(ellipse at 50% 45%, rgba(255,255,255,.38), transparent 65%),
+        repeating-linear-gradient(0deg, transparent 0 5px, rgba(110,80,40,.018) 6px);
 }
 
 .intro-writing {
     position: absolute;
     z-index: 4;
-    top: 23%;
+    top: 24%;
     left: 8%;
     right: 8%;
     text-align: center;
@@ -307,9 +203,9 @@ button {
 }
 
 .intro-title {
-    font-size: clamp(32px, 9vw, 52px);
-    margin: 18px 0;
+    font-size: clamp(35px, 10vw, 55px);
     color: var(--wine);
+    margin: 22px 0;
 }
 
 .intro-subtitle {
@@ -317,44 +213,102 @@ button {
     color: #806b56;
 }
 
+.envelope-fold-left,
+.envelope-fold-right {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 72%;
+    background: linear-gradient(145deg, #f5ead6, #e3cfad);
+    z-index: 2;
+}
+
+.envelope-fold-left {
+    left: 0;
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+    filter: drop-shadow(2px -3px 5px rgba(75,50,25,.1));
+}
+
+.envelope-fold-right {
+    right: 0;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    filter: drop-shadow(-2px -3px 5px rgba(75,50,25,.1));
+}
+
+.envelope-bottom {
+    position: absolute;
+    inset: auto 0 0;
+    height: 72%;
+    background: linear-gradient(160deg, #ead9bc, #d9c29b);
+    clip-path: polygon(0 100%, 50% 0, 100% 100%);
+    z-index: 3;
+    filter: drop-shadow(0 -5px 9px rgba(80,50,20,.12));
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 57%;
+    background: linear-gradient(160deg, #fbf4e7, #e8d6b7);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    z-index: 6;
+    transition: transform 1.65s cubic-bezier(.68,-.08,.22,1);
+    filter: drop-shadow(0 8px 7px rgba(75,48,20,.15));
+}
+
+.envelope-flap::after {
+    content: "";
+    position: absolute;
+    inset: 10px 10px 0;
+    border-top: 1px solid rgba(189,152,82,.5);
+}
+
+/* مهر مومی ساده، بدون نوشته و نماد */
+
 .seal-button {
     position: absolute;
     z-index: 10;
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 112px;
-    height: 112px;
+    width: 116px;
+    height: 116px;
+    padding: 0;
     border: 0;
-    border-radius: 50%;
-    color: #f4dfb4;
-    font-size: 37px;
+    border-radius: 48% 52% 47% 53% / 52% 46% 54% 48%;
     background:
-        radial-gradient(circle at 35% 25%, #a34a58, #762d3c 60%, #4c1c2a);
+        radial-gradient(ellipse at 33% 25%, rgba(255,255,255,.2), transparent 25%),
+        radial-gradient(ellipse at 70% 75%, rgba(30,0,10,.3), transparent 35%),
+        radial-gradient(circle at 42% 38%, #963f50 0%, #762b3c 53%, #4e1b29 100%);
     box-shadow:
-        0 9px 18px rgba(67,24,32,.3),
-        inset 0 2px 5px rgba(255,255,255,.25),
-        inset 0 -5px 8px rgba(30,0,10,.3);
-    outline: 2px solid #bd9852;
+        0 10px 20px rgba(67,24,32,.32),
+        inset 0 3px 7px rgba(255,255,255,.18),
+        inset 0 -7px 10px rgba(30,0,10,.3);
+    outline: 1px solid #bd9852;
     outline-offset: 5px;
     transition: transform .3s ease, opacity .5s ease;
+}
+
+.seal-button::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(224,185,142,.3);
+    border-radius: 48% 52% 47% 53% / 52% 46% 54% 48%;
+    box-shadow: inset 0 0 8px rgba(35,0,10,.2);
 }
 
 .seal-button:active {
     transform: translate(-50%, -50%) scale(.94);
 }
 
-.seal-button span {
-    display: block;
-    font-size: 11px;
-    margin-top: -3px;
-    font-family: "Vazirmatn", sans-serif;
-}
-
 .open-hint {
     position: absolute;
     z-index: 8;
-    top: calc(55% + 92px);
+    top: calc(55% + 100px);
     left: 0;
     right: 0;
     text-align: center;
@@ -375,19 +329,19 @@ button {
 #intro.opening .seal-button {
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, -50%) scale(1.7);
+    transform: translate(-50%, -50%) scale(1.5);
 }
 
 #intro.opening .envelope-fold-left {
-    animation: foldLeft 1.5s 0.45s forwards;
+    animation: foldLeft 1.5s .45s forwards;
 }
 
 #intro.opening .envelope-fold-right {
-    animation: foldRight 1.5s 0.45s forwards;
+    animation: foldRight 1.5s .45s forwards;
 }
 
 #intro.opening .envelope-bottom {
-    animation: foldBottom 1.5s 0.45s forwards;
+    animation: foldBottom 1.5s .45s forwards;
 }
 
 @keyframes foldLeft {
@@ -400,7 +354,7 @@ button {
     to { transform: translateY(110%) rotateX(35deg); opacity: .2; }
 }
 
-/* ----------------- محتوای اصلی ----------------- */
+/* ---------------- صفحه اصلی ---------------- */
 
 #main-site {
     opacity: 0;
@@ -415,7 +369,7 @@ button {
 
 .page-paper {
     position: relative;
-    width: min(100%, 760px);
+    width: min(100%, 780px);
     margin: 0 auto;
     min-height: 100vh;
     overflow: hidden;
@@ -423,14 +377,15 @@ button {
         radial-gradient(ellipse at 10% 5%, rgba(255,255,255,.5), transparent 35%),
         radial-gradient(ellipse at 90% 90%, rgba(189,152,82,.1), transparent 40%),
         var(--paper);
-    box-shadow: 0 0 45px rgba(70,45,20,.12);
+    box-shadow: 0 0 45px rgba(70,45,20,.1);
 }
 
 .page-paper::before {
     content: "";
     position: absolute;
     inset: 9px;
-    border: 1px solid rgba(189,152,82,.7);
+    border: 1px solid rgba(189,152,82,.65);
+    border-radius: 5px;
     pointer-events: none;
     z-index: 10;
 }
@@ -439,14 +394,15 @@ button {
     content: "";
     position: absolute;
     inset: 17px;
-    border: 1px solid rgba(133,100,46,.25);
+    border: 1px solid rgba(133,100,46,.2);
+    border-radius: 4px;
     pointer-events: none;
     z-index: 10;
 }
 
 section {
     position: relative;
-    padding: 66px 28px;
+    padding: 68px 25px;
     text-align: center;
 }
 
@@ -460,14 +416,6 @@ section {
     padding: 70px 28px;
 }
 
-.hero::before {
-    content: "✧";
-    position: absolute;
-    top: 45px;
-    font-size: 30px;
-    color: var(--gold);
-}
-
 .hero-kicker {
     font-size: 13px;
     color: var(--muted);
@@ -475,21 +423,21 @@ section {
 }
 
 .hero-names {
-    font-size: clamp(40px, 11vw, 65px);
+    font-size: clamp(43px, 12vw, 68px);
     color: var(--wine);
-    margin: 20px 0 8px;
+    margin: 18px 0 6px;
 }
 
 .hero-and {
     color: var(--gold-dark);
     font-size: 20px;
-    margin: 2px 0;
+    margin: 0;
 }
 
 .hero-description {
-    max-width: 430px;
+    max-width: 450px;
     font-size: 14px;
-    line-height: 2.4;
+    line-height: 2.5;
     color: var(--muted);
     margin-top: 20px;
 }
@@ -503,7 +451,7 @@ section {
 }
 
 .section-title {
-    font-size: clamp(28px, 7vw, 38px);
+    font-size: clamp(28px, 7vw, 39px);
     color: var(--wine);
     margin: 0 0 10px;
 }
@@ -511,7 +459,7 @@ section {
 .section-subtitle {
     color: var(--muted);
     font-size: 13px;
-    line-height: 2.2;
+    line-height: 2.3;
 }
 
 .divider-ornament {
@@ -535,18 +483,19 @@ section {
     background: linear-gradient(to right, transparent, var(--gold));
 }
 
-/* کارت‌های تزیینی */
+/* کارت‌های گرد و لطیف */
 
-.ornate-card {
+.ornate-card,
+.address-card,
+.rsvp-card {
     position: relative;
-    padding: 28px 20px;
-    margin: 25px auto;
-    max-width: 530px;
-    background: rgba(255,250,239,.58);
-    border: 1px solid var(--gold);
-    outline: 1px solid rgba(189,152,82,.25);
-    outline-offset: 5px;
-    box-shadow: 0 12px 28px rgba(70,45,20,.08);
+    padding: 30px 22px;
+    margin: 27px auto;
+    max-width: 550px;
+    border: 1px solid rgba(185,149,85,.8);
+    border-radius: 25px;
+    background: rgba(255,250,239,.67);
+    box-shadow: 0 10px 28px rgba(70,45,20,.08);
 }
 
 .ornate-card::before,
@@ -554,47 +503,41 @@ section {
     content: "✧";
     position: absolute;
     color: var(--gold-dark);
-    font-size: 21px;
+    font-size: 19px;
 }
 
-.ornate-card::before {
-    top: 7px;
-    right: 10px;
-}
+.ornate-card::before { top: 10px; right: 15px; }
+.ornate-card::after { bottom: 10px; left: 15px; }
 
-.ornate-card::after {
-    bottom: 7px;
-    left: 10px;
-}
-
-/* ----------------- روزشمار مه‌آلود ----------------- */
+/* ---------------- روزشمار ---------------- */
 
 .countdown-card {
     max-width: 550px;
     margin: 30px auto;
     position: relative;
-    padding: 32px 16px;
+    padding: 34px 16px 28px;
     overflow: hidden;
-    background: linear-gradient(145deg, #f8f0df, #e9d8b8);
     border: 1px solid var(--gold);
-    box-shadow: 0 15px 35px rgba(80,50,20,.13);
+    border-radius: 28px;
+    background: linear-gradient(145deg, #f8f0df, #e9d8b8);
+    box-shadow: 0 12px 28px rgba(80,50,20,.1);
 }
 
 .countdown-title {
-    font-size: 21px;
+    font-size: 22px;
     color: var(--wine);
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
 .countdown-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 7px;
+    gap: 9px;
     direction: rtl;
 }
 
 .time-unit {
-    border: 1px solid rgba(189,152,82,.65);
+    border: 1px solid rgba(189,152,82,.7);
     border-radius: 50%;
     aspect-ratio: 1;
     max-width: 105px;
@@ -604,8 +547,8 @@ section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(255,250,239,.65);
-    box-shadow: inset 0 0 0 4px rgba(189,152,82,.1);
+    background: rgba(255,250,239,.72);
+    box-shadow: inset 0 0 0 4px rgba(189,152,82,.08);
 }
 
 .time-number {
@@ -639,41 +582,48 @@ section {
     pointer-events: none;
 }
 
-/* ----------------- گالری ----------------- */
+/* ---------------- عکس‌ها ---------------- */
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px 16px;
-    max-width: 600px;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    max-width: 620px;
     margin: 32px auto 0;
 }
 
 .gallery-item {
     position: relative;
-    padding: 8px;
+    width: 100%;
+    padding: 9px;
+    border-radius: 24px;
     background: linear-gradient(145deg, #fff8e9, #d8c194);
-    border: 1px solid var(--gold-dark);
-    box-shadow: 0 10px 22px rgba(67,43,24,.16);
-    transform: rotate(-1deg);
-    transition: transform .5s ease, box-shadow .5s ease;
+    border: 1px solid var(--gold);
+    box-shadow: 0 12px 28px rgba(67,43,24,.13);
+    transition: transform .45s ease, box-shadow .45s ease;
 }
 
 .gallery-item:nth-child(even) {
-    transform: rotate(1.3deg);
+    transform: rotate(.5deg);
+}
+
+.gallery-item:nth-child(odd) {
+    transform: rotate(-.5deg);
 }
 
 .gallery-item:hover {
-    transform: translateY(-5px) rotate(0);
-    box-shadow: 0 18px 30px rgba(67,43,24,.22);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 35px rgba(67,43,24,.18);
 }
 
 .gallery-item img {
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 5;
+    max-height: 620px;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    border: 1px solid rgba(133,100,46,.55);
+    border-radius: 17px;
+    border: 1px solid rgba(133,100,46,.35);
     cursor: zoom-in;
 }
 
@@ -681,7 +631,7 @@ section {
     font-family: "Noto Nastaliq Urdu", serif;
     color: var(--gold-dark);
     padding: 8px 0 2px;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 #lightbox {
@@ -689,21 +639,20 @@ section {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(24,16,13,.92);
+    background: rgba(24,16,13,.93);
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 18px;
 }
 
-#lightbox.show {
-    display: flex;
-}
+#lightbox.show { display: flex; }
 
 #lightbox img {
-    max-width: 95%;
-    max-height: 85vh;
+    max-width: 96%;
+    max-height: 88vh;
     object-fit: contain;
-    border: 5px solid var(--gold);
+    border: 4px solid var(--gold);
+    border-radius: 18px;
     box-shadow: 0 0 35px rgba(0,0,0,.4);
 }
 
@@ -720,52 +669,52 @@ section {
     font-size: 23px;
 }
 
-/* ----------------- ویدئو ----------------- */
+/* ---------------- ویدئو ---------------- */
 
 .video-frame {
-    max-width: 560px;
+    max-width: 600px;
     margin: 28px auto;
-    padding: 9px;
+    padding: 8px;
     background: linear-gradient(145deg, #e7d3a8, #a9823e);
-    box-shadow: 0 12px 28px rgba(70,45,20,.16);
+    border-radius: 25px;
+    box-shadow: 0 12px 28px rgba(70,45,20,.13);
 }
 
 .video-frame video {
     display: block;
     width: 100%;
-    max-height: 520px;
+    max-height: 560px;
     background: #241a18;
-    border: 1px solid var(--gold-dark);
+    border-radius: 18px;
 }
 
-/* ----------------- تاریخ ----------------- */
+/* ---------------- تاریخ ---------------- */
 
 .calendar-card {
-    width: min(100%, 340px);
+    width: min(100%, 350px);
     margin: 30px auto;
-    background: #fbf4e7;
+    overflow: hidden;
     border: 1px solid var(--gold);
-    box-shadow: 0 15px 30px rgba(67,43,24,.13);
+    border-radius: 25px;
+    background: #fbf4e7;
+    box-shadow: 0 13px 28px rgba(67,43,24,.12);
     transform-style: preserve-3d;
 }
 
 .calendar-top {
     background: linear-gradient(120deg, var(--wine-dark), var(--wine));
     color: #f8e9c8;
-    padding: 15px;
+    padding: 16px;
     font-size: 14px;
     letter-spacing: 2px;
 }
 
-.calendar-body {
-    padding: 24px 12px;
-}
+.calendar-body { padding: 24px 12px; }
 
 .calendar-day {
     font-size: 65px;
     color: var(--wine);
     line-height: 1.4;
-    font-weight: 300;
 }
 
 .calendar-month {
@@ -785,30 +734,21 @@ section {
 
 @keyframes calendarFlip {
     0% { transform: rotateX(0); }
-    45% { transform: rotateX(-35deg); }
+    45% { transform: rotateX(-30deg); }
     100% { transform: rotateX(0); }
 }
 
-/* ----------------- آدرس ----------------- */
-
-.address-card {
-    max-width: 550px;
-    margin: 30px auto;
-    padding: 28px 20px;
-    background: rgba(255,250,239,.65);
-    border: 1px solid var(--gold);
-    box-shadow: 0 12px 25px rgba(67,43,24,.09);
-}
+/* ---------------- آدرس ---------------- */
 
 .address-icon {
-    width: 66px;
-    height: 66px;
-    margin: 0 auto 15px;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 17px;
     display: grid;
     place-items: center;
     border-radius: 50%;
-    border: 2px solid var(--gold);
-    outline: 1px solid rgba(189,152,82,.5);
+    border: 1px solid var(--gold);
+    outline: 1px solid rgba(189,152,82,.35);
     outline-offset: 4px;
     color: var(--wine);
     font-size: 29px;
@@ -830,29 +770,21 @@ section {
     padding: 13px 25px;
     margin-top: 18px;
     border: 1px solid var(--gold-dark);
+    border-radius: 30px;
     color: #fff3d8;
     text-decoration: none;
     background: linear-gradient(135deg, #8b6935, #604521);
-    box-shadow: 0 6px 15px rgba(70,45,20,.18);
+    box-shadow: 0 6px 15px rgba(70,45,20,.15);
     transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .map-button:hover,
 .submit-button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(70,45,20,.22);
+    box-shadow: 0 10px 20px rgba(70,45,20,.2);
 }
 
-/* ----------------- فرم پاسخ ----------------- */
-
-.rsvp-card {
-    max-width: 550px;
-    margin: 30px auto;
-    padding: 30px 20px;
-    border: 1px solid var(--gold);
-    background: rgba(255,250,239,.7);
-    box-shadow: 0 12px 28px rgba(67,43,24,.1);
-}
+/* ---------------- فرم پاسخ ---------------- */
 
 .form-group {
     text-align: right;
@@ -869,11 +801,11 @@ section {
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 13px 12px;
+    padding: 14px 13px;
     color: var(--ink);
     background: #fffaf0;
     border: 1px solid #c9ad76;
-    border-radius: 2px;
+    border-radius: 14px;
     outline: none;
 }
 
@@ -885,7 +817,7 @@ section {
 
 .submit-button {
     width: 100%;
-    border-radius: 2px;
+    border-radius: 30px;
     font-weight: 500;
     font-size: 15px;
 }
@@ -894,12 +826,13 @@ section {
     color: #477044;
     background: #edf4e7;
     border: 1px solid #a9c59a;
-    padding: 12px;
+    border-radius: 14px;
+    padding: 13px;
     margin-bottom: 18px;
     font-size: 13px;
 }
 
-/* ----------------- پایان صفحه ----------------- */
+/* ---------------- پایان ---------------- */
 
 .footer {
     padding: 55px 20px 75px;
@@ -908,7 +841,7 @@ section {
 }
 
 .footer-names {
-    font-size: 33px;
+    font-size: 36px;
     color: var(--wine);
     margin: 8px 0;
 }
@@ -918,14 +851,12 @@ section {
     font-size: 25px;
 }
 
-/* ----------------- افکت اسکرول ----------------- */
+/* ---------------- افکت اسکرول ---------------- */
 
 .reveal {
     opacity: 0;
-    transform: translateY(28px);
-    transition:
-        opacity .9s ease,
-        transform .9s cubic-bezier(.2,.7,.2,1);
+    transform: translateY(24px);
+    transition: opacity .85s ease, transform .85s cubic-bezier(.2,.7,.2,1);
 }
 
 .reveal.visible {
@@ -933,44 +864,23 @@ section {
     transform: translateY(0);
 }
 
-.float-decoration {
-    position: absolute;
-    color: rgba(133,100,46,.22);
-    pointer-events: none;
-    font-size: 28px;
-}
+@media (min-width: 560px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
 
-.float-decoration.one {
-    top: 30px;
-    right: 20px;
-}
-
-.float-decoration.two {
-    bottom: 30px;
-    left: 20px;
+    .gallery-item img {
+        aspect-ratio: 4 / 5;
+    }
 }
 
 @media (max-width: 380px) {
-    section {
-        padding: 55px 22px;
-    }
-
-    .countdown-grid {
-        gap: 4px;
-    }
-
-    .time-label {
-        font-size: 9px;
-    }
-
-    .time-number {
-        font-size: 21px;
-    }
-
-    .seal-button {
-        width: 100px;
-        height: 100px;
-    }
+    section { padding: 55px 20px; }
+    .countdown-grid { gap: 4px; }
+    .time-label { font-size: 9px; }
+    .time-number { font-size: 21px; }
+    .seal-button { width: 104px; height: 104px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -988,7 +898,6 @@ section {
 
 <body class="locked">
 
-<!-- پاکت ورودی -->
 <div id="intro">
     <div class="envelope">
         <div class="envelope-paper"></div>
@@ -1004,31 +913,19 @@ section {
         <div class="envelope-bottom"></div>
         <div class="envelope-flap"></div>
 
-        <button class="seal-button" id="openSeal" aria-label="باز کردن دعوت‌نامه">
-            ❦
-            <span>باز کردن نامه</span>
-        </button>
+        <button class="seal-button" id="openSeal" aria-label="باز کردن دعوت‌نامه"></button>
         <div class="open-hint">برای گشودن دعوت‌نامه لمس کنید</div>
     </div>
 </div>
 
-<!-- سایت اصلی -->
 <div id="main-site">
 <div class="page-paper paper-texture">
 
     <section class="hero">
         <div class="hero-kicker reveal">به نام عشق و زیبایی</div>
-
-        <div class="hero-names nastaliq reveal">
-            امیر
-        </div>
-
+        <div class="hero-names nastaliq reveal">امیر</div>
         <div class="hero-and reveal">و</div>
-
-        <div class="hero-names nastaliq reveal">
-            زهرا
-        </div>
-
+        <div class="hero-names nastaliq reveal">زهرا</div>
         <div class="ornament reveal">❦ ✧ ❦</div>
 
         <p class="hero-description reveal">
@@ -1041,7 +938,6 @@ section {
     </section>
 
     <section>
-        <span class="float-decoration one">✧</span>
         <div class="reveal">
             <div class="section-title nastaliq">شمارش تا قرار عاشقانه</div>
             <div class="divider-ornament">❦</div>
@@ -1073,7 +969,7 @@ section {
             </div>
 
             <canvas class="fog-canvas" id="fogCanvas"></canvas>
-            <div class="fog-hint">✧ انگشت خود را روی مه بکشید تا شمارش آشکار شود ✧</div>
+            <div class="fog-hint">✧ انگشت خود را روی مه بکشید ✧</div>
         </div>
     </section>
 
@@ -1081,11 +977,8 @@ section {
         <div class="reveal">
             <div class="section-title nastaliq">لحظه‌های ما</div>
             <div class="divider-ornament">❦</div>
-            <p class="section-subtitle">
-                قاب‌هایی از خاطرات و لحظه‌های دوست‌داشتنی
-            </p>
+            <p class="section-subtitle">قاب‌هایی از خاطرات و لحظه‌های دوست‌داشتنی</p>
         </div>
-
         <div class="gallery-grid">
             {{GALLERY}}
         </div>
@@ -1139,9 +1032,7 @@ section {
         <div class="reveal">
             <div class="section-title nastaliq">پاسخ به دعوت</div>
             <div class="divider-ornament">❦</div>
-            <p class="section-subtitle">
-                لطفاً ما را از افتخار حضورتان باخبر کنید
-            </p>
+            <p class="section-subtitle">لطفاً ما را از افتخار حضورتان باخبر کنید</p>
         </div>
 
         <div class="rsvp-card reveal">
@@ -1150,14 +1041,8 @@ section {
             <form method="POST" action="/">
                 <div class="form-group">
                     <label for="guestName">نام و نام خانوادگی</label>
-                    <input
-                        id="guestName"
-                        name="name"
-                        type="text"
-                        placeholder="نام شما"
-                        maxlength="100"
-                        required
-                    >
+                    <input id="guestName" name="name" type="text"
+                           placeholder="نام شما" maxlength="100" required>
                 </div>
 
                 <div class="form-group">
@@ -1180,9 +1065,7 @@ section {
                     </select>
                 </div>
 
-                <button class="submit-button" type="submit">
-                    ❦ ثبت پاسخ دعوت ❦
-                </button>
+                <button class="submit-button" type="submit">❦ ثبت پاسخ دعوت ❦</button>
             </form>
         </div>
     </section>
@@ -1208,8 +1091,6 @@ section {
 </audio>
 
 <script>
-/* ----------------- باز شدن پاکت ----------------- */
-
 const intro = document.getElementById("intro");
 const mainSite = document.getElementById("main-site");
 const openSeal = document.getElementById("openSeal");
@@ -1223,11 +1104,8 @@ openSeal.addEventListener("click", () => {
 
     intro.classList.add("opening");
 
-    // تلاش برای پخش موزیک پس از لمس کاربر
     music.volume = 0.45;
-    music.play().catch(() => {
-        // در صورت محدودیت مرورگر، سایت بدون موزیک باز می‌شود.
-    });
+    music.play().catch(() => {});
 
     setTimeout(() => {
         intro.classList.add("hidden");
@@ -1239,24 +1117,19 @@ openSeal.addEventListener("click", () => {
 });
 
 
-/* ----------------- شمارش معکوس ----------------- */
+/* شمارش معکوس: ۲۳ دسامبر ۲۰۲۶، ساعت ۱۹ به وقت ایران */
 
-// زمان مراسم به وقت ایران: ۲۳ دسامبر ۲۰۲۶، ساعت ۱۹
 const weddingDate = new Date("2026-12-23T19:00:00+03:30").getTime();
 
-const persianDigits = number => {
-    return String(number).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
-};
+const persianDigits = number =>
+    String(number).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
 
 function updateCountdown() {
-    const now = Date.now();
-    let distance = weddingDate - now;
+    let distance = Math.max(0, weddingDate - Date.now());
 
-    if (distance < 0) distance = 0;
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((distance / (1000 * 60)) % 60);
+    const days = Math.floor(distance / 86400000);
+    const hours = Math.floor((distance / 3600000) % 24);
+    const minutes = Math.floor((distance / 60000) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
     document.getElementById("days").textContent = persianDigits(days);
@@ -1269,7 +1142,7 @@ updateCountdown();
 setInterval(updateCountdown, 1000);
 
 
-/* ----------------- مه‌زدایی با لمس و کشیدن ----------------- */
+/* مه ظریف روزشمار */
 
 let fogInitialized = false;
 
@@ -1300,24 +1173,22 @@ function initFog() {
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        // مه کاغذی روی شمارش
         const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, "rgba(241,229,205,0.98)");
-        gradient.addColorStop(0.5, "rgba(231,216,187,0.97)");
-        gradient.addColorStop(1, "rgba(247,237,216,0.98)");
+        gradient.addColorStop(0, "rgba(241,229,205,.97)");
+        gradient.addColorStop(.5, "rgba(231,216,187,.96)");
+        gradient.addColorStop(1, "rgba(247,237,216,.97)");
 
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
 
-        // نقش‌های لطیف روی مه
-        ctx.fillStyle = "rgba(133,100,46,.12)";
+        ctx.fillStyle = "rgba(133,100,46,.1)";
         ctx.font = "22px serif";
         ctx.fillText("✧", 20, 35);
         ctx.fillText("❦", width - 45, height - 20);
     }
 
-    function pointFromEvent(event) {
+    function getPoint(event) {
         const rect = canvas.getBoundingClientRect();
         return {
             x: event.clientX - rect.left,
@@ -1329,50 +1200,47 @@ function initFog() {
         ctx.save();
         ctx.globalCompositeOperation = "destination-out";
 
-        const radius = 43;
+        // شعاع کوچک‌تر برای پاک شدن ظریف‌تر مه
+        const radius = 25;
         const gradient = ctx.createRadialGradient(
-            point.x, point.y, 5,
+            point.x, point.y, 3,
             point.x, point.y, radius
         );
 
         gradient.addColorStop(0, "rgba(0,0,0,1)");
-        gradient.addColorStop(0.72, "rgba(0,0,0,.95)");
+        gradient.addColorStop(.65, "rgba(0,0,0,.95)");
         gradient.addColorStop(1, "rgba(0,0,0,0)");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
         ctx.fill();
-
         ctx.restore();
     }
 
     canvas.addEventListener("pointerdown", event => {
         drawing = true;
-        lastPoint = pointFromEvent(event);
+        lastPoint = getPoint(event);
         eraseAt(lastPoint);
     });
 
     canvas.addEventListener("pointermove", event => {
         if (!drawing) return;
 
-        const point = pointFromEvent(event);
+        const point = getPoint(event);
 
         if (lastPoint) {
             const dx = point.x - lastPoint.x;
             const dy = point.y - lastPoint.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const steps = Math.max(1, Math.ceil(distance / 14));
+            const steps = Math.max(1, Math.ceil(distance / 10));
 
             for (let i = 1; i <= steps; i++) {
-                const p = {
+                eraseAt({
                     x: lastPoint.x + dx * i / steps,
                     y: lastPoint.y + dy * i / steps
-                };
-                eraseAt(p);
+                });
             }
-        } else {
-            eraseAt(point);
         }
 
         lastPoint = point;
@@ -1389,14 +1257,11 @@ function initFog() {
 
     resizeCanvas();
 
-    window.addEventListener("resize", () => {
-        // اندازه جدید را فقط در صورت تغییر ابعاد کارت اعمال می‌کنیم.
-        resizeCanvas();
-    });
+    window.addEventListener("resize", resizeCanvas);
 }
 
 
-/* ----------------- ظاهر شدن بخش‌ها هنگام اسکرول ----------------- */
+/* نمایان شدن بخش‌ها هنگام اسکرول */
 
 const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -1405,16 +1270,14 @@ const revealObserver = new IntersectionObserver(entries => {
             revealObserver.unobserve(entry.target);
         }
     });
-}, {
-    threshold: 0.12
-});
+}, { threshold: 0.12 });
 
 document.querySelectorAll(".reveal").forEach(element => {
     revealObserver.observe(element);
 });
 
 
-/* ----------------- افکت تقویم ----------------- */
+/* افکت تقویم */
 
 const calendar = document.getElementById("calendarCard");
 
@@ -1430,7 +1293,7 @@ const calendarObserver = new IntersectionObserver(entries => {
 calendarObserver.observe(calendar);
 
 
-/* ----------------- نمایش بزرگ عکس‌ها ----------------- */
+/* نمایش بزرگ عکس‌ها */
 
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightboxImage");
@@ -1442,23 +1305,19 @@ document.querySelectorAll(".gallery-item img").forEach(img => {
     });
 });
 
-document.getElementById("closeLightbox").addEventListener("click", () => {
+function closeLightbox() {
     lightbox.classList.remove("show");
     lightboxImage.src = "";
-});
+}
+
+document.getElementById("closeLightbox").addEventListener("click", closeLightbox);
 
 lightbox.addEventListener("click", event => {
-    if (event.target === lightbox) {
-        lightbox.classList.remove("show");
-        lightboxImage.src = "";
-    }
+    if (event.target === lightbox) closeLightbox();
 });
 
 document.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-        lightbox.classList.remove("show");
-        lightboxImage.src = "";
-    }
+    if (event.key === "Escape") closeLightbox();
 });
 </script>
 
@@ -1466,10 +1325,6 @@ document.addEventListener("keydown", event => {
 </html>
 """
 
-
-# --------------------------------------------------
-# ساخت گالری تصاویر
-# --------------------------------------------------
 
 def build_gallery():
     photo_names = [
@@ -1485,9 +1340,7 @@ def build_gallery():
     items = []
 
     for index, filename in enumerate(photo_names, start=1):
-        photo_path = STATIC_DIR / filename
-
-        if photo_path.exists():
+        if (STATIC_DIR / filename).exists():
             safe_name = html.escape(filename, quote=True)
             items.append(
                 f"""
@@ -1502,7 +1355,7 @@ def build_gallery():
 
     if not items:
         return """
-        <div class="ornate-card" style="grid-column:1/-1">
+        <div class="ornate-card">
             <p>تصاویر زیبای شما به‌زودی در این قسمت قرار می‌گیرند.</p>
         </div>
         """
@@ -1510,14 +1363,8 @@ def build_gallery():
     return "\n".join(items)
 
 
-# --------------------------------------------------
-# بخش ویدئو
-# --------------------------------------------------
-
 def build_video():
-    video_path = STATIC_DIR / "wedding.mp4"
-
-    if not video_path.exists():
+    if not (STATIC_DIR / "wedding.mp4").exists():
         return ""
 
     return """
@@ -1526,7 +1373,6 @@ def build_video():
             <div class="section-title nastaliq">لحظه‌ای برای تماشا</div>
             <div class="divider-ornament">❦</div>
         </div>
-
         <div class="video-frame reveal">
             <video controls playsinline preload="metadata">
                 <source src="/static/wedding.mp4" type="video/mp4">
@@ -1536,10 +1382,6 @@ def build_video():
     </section>
     """
 
-
-# --------------------------------------------------
-# مسیر اصلی سایت
-# --------------------------------------------------
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -1579,10 +1421,7 @@ def home():
 
                     if not file_exists:
                         writer.writerow([
-                            "نام",
-                            "تعداد نفرات",
-                            "وضعیت حضور",
-                            "زمان ثبت"
+                            "نام", "تعداد نفرات", "وضعیت حضور", "زمان ثبت"
                         ])
 
                     writer.writerow([
@@ -1607,7 +1446,6 @@ def home():
                     'ثبت پاسخ با مشکل روبه‌رو شد. لطفاً دوباره تلاش کنید.'
                     '</div>'
                 )
-
         else:
             success = (
                 '<div class="success-message">'
@@ -1625,10 +1463,6 @@ def home():
 
     return page
 
-
-# --------------------------------------------------
-# اجرای محلی
-# --------------------------------------------------
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
