@@ -61,7 +61,7 @@ PAGE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f2e7d2">
+<meta name="theme-color" content="#efe2c9">
 <meta name="description" content="دعوت‌نامه عروسی امیر و زهرا">
 <title>عروسی امیر و زهرا</title>
 
@@ -79,10 +79,11 @@ PAGE = r"""<!DOCTYPE html>
 }
 
 :root {
-    --paper: #f2e7d2;
+    --paper: #efe2c9;
     --paper-light: #fbf5e9;
-    --paper-dark: #e4d1ad;
+    --paper-dark: #ddc9a5;
     --gold: #bd9852;
+    --gold-light: #e8ce96;
     --gold-dark: #80602e;
     --wine: #762f40;
     --wine-dark: #4c1c2a;
@@ -137,12 +138,15 @@ button, input, select {
 .ornament {
     text-align: center;
     color: var(--gold-dark);
-    font-size: 22px;
-    letter-spacing: 7px;
-    margin: 15px 0;
+    font-size: 25px;
+    letter-spacing: 8px;
+    margin: 20px 0;
+    text-shadow: 0 2px 8px rgba(189,152,82,.2);
 }
 
-/* ---------------- پاکت تمام صفحه ---------------- */
+/* =================================
+   پاکت دعوت‌نامه
+================================= */
 
 #intro {
     position: fixed;
@@ -152,7 +156,7 @@ button, input, select {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-    perspective: 1400px;
+    perspective: 1500px;
     background: #e8d8bc;
     transition: opacity 1s ease, visibility 1s ease;
 }
@@ -169,7 +173,7 @@ button, input, select {
     overflow: hidden;
     transform-style: preserve-3d;
     background:
-        radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.5), transparent 65%),
+        radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.55), transparent 65%),
         linear-gradient(145deg, #f8efdf, #e4d0ad);
 }
 
@@ -177,21 +181,23 @@ button, input, select {
     content: "";
     position: absolute;
     inset: 11px;
-    border: 1px solid rgba(164,125,57,.8);
-    box-shadow: inset 0 0 0 4px rgba(255,255,255,.2);
+    border: 1px solid rgba(164,125,57,.85);
+    box-shadow:
+        inset 0 0 0 4px rgba(255,255,255,.2),
+        inset 0 0 18px rgba(164,125,57,.12);
     z-index: 9;
     pointer-events: none;
-    border-radius: 4px;
+    border-radius: 7px;
 }
 
 .envelope::after {
     content: "";
     position: absolute;
     inset: 19px;
-    border: 1px solid rgba(164,125,57,.28);
+    border: 1px solid rgba(164,125,57,.35);
     z-index: 9;
     pointer-events: none;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 .envelope-paper {
@@ -205,7 +211,7 @@ button, input, select {
 .intro-writing {
     position: absolute;
     z-index: 4;
-    top: 22%;
+    top: 20%;
     left: 8%;
     right: 8%;
     text-align: center;
@@ -213,14 +219,15 @@ button, input, select {
 }
 
 .intro-small {
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 2px;
 }
 
 .intro-title {
-    font-size: clamp(48px, 13vw, 72px);
+    font-size: clamp(52px, 14vw, 78px);
     color: var(--wine);
-    margin: 25px 0 12px;
+    margin: 28px 0 12px;
+    text-shadow: 0 4px 15px rgba(118,47,64,.12);
 }
 
 .intro-subtitle {
@@ -241,11 +248,13 @@ button, input, select {
 .envelope-fold-left {
     left: 0;
     clip-path: polygon(0 0, 100% 100%, 0 100%);
+    filter: drop-shadow(4px -3px 8px rgba(80,50,20,.12));
 }
 
 .envelope-fold-right {
     right: 0;
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    filter: drop-shadow(-4px -3px 8px rgba(80,50,20,.12));
 }
 
 .envelope-bottom {
@@ -255,6 +264,7 @@ button, input, select {
     background: linear-gradient(160deg, #ead9bc, #d9c29b);
     clip-path: polygon(0 100%, 50% 0, 100% 100%);
     z-index: 3;
+    filter: drop-shadow(0 -5px 9px rgba(80,50,20,.12));
 }
 
 .envelope-flap {
@@ -271,15 +281,15 @@ button, input, select {
     filter: drop-shadow(0 8px 7px rgba(75,48,20,.15));
 }
 
-/* مهر مومی ساده، بدون نوشته و نقش */
+/* مهر مومی ساده و بدون نوشته */
 .seal-button {
     position: absolute;
     z-index: 10;
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 118px;
-    height: 118px;
+    width: 122px;
+    height: 122px;
     padding: 0;
     border: 0;
     border-radius: 48% 52% 47% 53% / 52% 46% 54% 48%;
@@ -292,8 +302,9 @@ button, input, select {
         inset 0 3px 7px rgba(255,255,255,.18),
         inset 0 -7px 10px rgba(30,0,10,.3);
     outline: 1px solid #bd9852;
-    outline-offset: 5px;
-    transition: transform .3s ease, opacity .5s ease;
+    outline-offset: 6px;
+    cursor: pointer;
+    animation: sealGlow 3s ease-in-out infinite;
 }
 
 .seal-button::before {
@@ -305,10 +316,26 @@ button, input, select {
     box-shadow: inset 0 0 8px rgba(35,0,10,.2);
 }
 
+@keyframes sealGlow {
+    0%, 100% {
+        box-shadow:
+            0 10px 20px rgba(67,24,32,.32),
+            inset 0 3px 7px rgba(255,255,255,.18),
+            inset 0 -7px 10px rgba(30,0,10,.3);
+    }
+    50% {
+        box-shadow:
+            0 12px 25px rgba(67,24,32,.4),
+            inset 0 3px 7px rgba(255,255,255,.2),
+            inset 0 -7px 10px rgba(30,0,10,.3),
+            0 0 24px rgba(189,152,82,.3);
+    }
+}
+
 .open-hint {
     position: absolute;
     z-index: 8;
-    top: calc(55% + 105px);
+    top: calc(55% + 112px);
     left: 0;
     right: 0;
     text-align: center;
@@ -356,7 +383,9 @@ button, input, select {
     to { transform: translateY(110%) rotateX(35deg); opacity: .2; }
 }
 
-/* ---------------- صفحه اصلی ---------------- */
+/* =================================
+   صفحه اصلی
+================================= */
 
 #main-site {
     opacity: 0;
@@ -376,9 +405,10 @@ button, input, select {
     min-height: 100vh;
     overflow: hidden;
     background:
-        radial-gradient(ellipse at 10% 5%, rgba(255,255,255,.5), transparent 35%),
-        radial-gradient(ellipse at 90% 90%, rgba(189,152,82,.1), transparent 40%),
-        var(--paper);
+        radial-gradient(ellipse at 10% 5%, rgba(255,255,255,.55), transparent 35%),
+        radial-gradient(ellipse at 90% 90%, rgba(189,152,82,.13), transparent 40%),
+        repeating-linear-gradient(0deg, transparent 0 7px, rgba(120,85,40,.012) 8px),
+        linear-gradient(135deg, #f8efdf, #eee0c5);
     box-shadow: 0 0 45px rgba(70,45,20,.1);
 }
 
@@ -386,8 +416,8 @@ button, input, select {
     content: "";
     position: absolute;
     inset: 9px;
-    border: 1px solid rgba(189,152,82,.65);
-    border-radius: 17px;
+    border: 1px solid rgba(189,152,82,.75);
+    border-radius: 19px;
     pointer-events: none;
     z-index: 10;
 }
@@ -396,21 +426,43 @@ button, input, select {
     content: "";
     position: absolute;
     inset: 17px;
-    border: 1px solid rgba(133,100,46,.2);
-    border-radius: 13px;
+    border: 1px solid rgba(133,100,46,.25);
+    border-radius: 15px;
     pointer-events: none;
     z-index: 10;
 }
 
 section {
     position: relative;
-    padding: 68px 25px;
+    padding: 75px 25px;
     text-align: center;
 }
 
+section::before,
+section::after {
+    position: absolute;
+    color: rgba(153,113,48,.35);
+    font-family: serif;
+    font-size: 30px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+section::before {
+    content: "❦";
+    top: 20px;
+    right: 25px;
+}
+
+section::after {
+    content: "✧";
+    bottom: 20px;
+    left: 25px;
+}
+
 .hero {
-    min-height: 92vh;
-    min-height: 92dvh;
+    min-height: 94vh;
+    min-height: 94dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -429,11 +481,14 @@ section {
     color: var(--wine);
     margin: 5px 0;
     line-height: 1.8;
+    text-shadow:
+        0 2px 1px rgba(255,255,255,.55),
+        0 5px 16px rgba(130,91,36,.12);
 }
 
 .hero-and {
     color: var(--gold-dark);
-    font-size: 20px;
+    font-size: 22px;
     margin: -5px 0;
 }
 
@@ -457,6 +512,9 @@ section {
     font-size: clamp(37px, 9vw, 53px);
     color: var(--wine);
     margin: 0 0 10px;
+    text-shadow:
+        0 2px 1px rgba(255,255,255,.55),
+        0 5px 16px rgba(130,91,36,.12);
 }
 
 .section-subtitle {
@@ -471,32 +529,47 @@ section {
     gap: 12px;
     justify-content: center;
     color: var(--gold-dark);
-    margin: 18px 0 28px;
+    margin: 20px 0 30px;
 }
 
 .divider-ornament::before,
 .divider-ornament::after {
     content: "";
     height: 1px;
-    width: 65px;
-    background: linear-gradient(to left, transparent, var(--gold));
+    width: 70px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #9b773c,
+        #e7cb8d,
+        #9b773c,
+        transparent
+    );
+    background-size: 200% 100%;
+    animation: goldFlow 5s linear infinite;
 }
 
-.divider-ornament::after {
-    background: linear-gradient(to right, transparent, var(--gold));
+@keyframes goldFlow {
+    from { background-position: 100% 0; }
+    to { background-position: -100% 0; }
 }
 
 .ornate-card,
 .address-card,
 .rsvp-card {
     position: relative;
-    padding: 30px 22px;
-    margin: 27px auto;
+    padding: 32px 22px;
+    margin: 30px auto;
     max-width: 550px;
-    border: 1px solid rgba(185,149,85,.8);
-    border-radius: 27px;
-    background: rgba(255,250,239,.67);
-    box-shadow: 0 10px 28px rgba(70,45,20,.08);
+    border: 1px solid rgba(185,149,85,.9);
+    outline: 1px solid rgba(189,152,82,.22);
+    outline-offset: 5px;
+    border-radius: 28px;
+    background: rgba(255,250,239,.75);
+    box-shadow:
+        0 12px 30px rgba(70,45,20,.1),
+        inset 0 0 20px rgba(189,152,82,.08);
+    transition: transform .5s ease, box-shadow .5s ease;
 }
 
 .ornate-card::before,
@@ -504,7 +577,7 @@ section {
     content: "✧";
     position: absolute;
     color: var(--gold-dark);
-    font-size: 19px;
+    font-size: 20px;
 }
 
 .ornate-card::before {
@@ -517,22 +590,37 @@ section {
     left: 15px;
 }
 
-/* ---------------- روزشمار مخفی زیر مه ---------------- */
+.ornate-card:hover,
+.address-card:hover,
+.rsvp-card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+        0 20px 38px rgba(70,45,20,.16),
+        inset 0 0 25px rgba(189,152,82,.12);
+}
+
+/* =================================
+   شمارش معکوس و مه کاملاً مات
+================================= */
 
 .countdown-card {
     max-width: 550px;
-    margin: 30px auto;
+    margin: 35px auto;
     position: relative;
-    padding: 34px 16px 28px;
+    padding: 36px 16px 30px;
     overflow: hidden;
     border: 1px solid var(--gold);
+    outline: 1px solid rgba(189,152,82,.3);
+    outline-offset: 5px;
     border-radius: 30px;
     background: linear-gradient(145deg, #f8f0df, #e9d8b8);
-    box-shadow: 0 12px 28px rgba(80,50,20,.1);
+    box-shadow:
+        0 12px 28px rgba(80,50,20,.1),
+        inset 0 0 20px rgba(189,152,82,.1);
 }
 
 .countdown-title {
-    font-size: 34px;
+    font-size: 36px;
     color: var(--wine);
     margin-bottom: 22px;
 }
@@ -545,7 +633,7 @@ section {
 }
 
 .time-unit {
-    border: 1px solid rgba(189,152,82,.7);
+    border: 1px solid rgba(189,152,82,.8);
     border-radius: 50%;
     aspect-ratio: 1;
     max-width: 105px;
@@ -556,7 +644,9 @@ section {
     justify-content: center;
     align-items: center;
     background: rgba(255,250,239,.72);
-    box-shadow: inset 0 0 0 4px rgba(189,152,82,.08);
+    box-shadow:
+        inset 0 0 0 4px rgba(189,152,82,.08),
+        0 5px 12px rgba(70,45,20,.06);
 }
 
 .time-number {
@@ -571,6 +661,7 @@ section {
     color: var(--muted);
 }
 
+/* لایه مه روی اعداد */
 .fog-canvas {
     position: absolute;
     inset: 0;
@@ -590,25 +681,30 @@ section {
     pointer-events: none;
 }
 
-/* ---------------- گالری ---------------- */
+/* =================================
+   گالری تصاویر
+================================= */
 
 .gallery-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 25px;
-    max-width: 620px;
-    margin: 32px auto 0;
+    gap: 27px;
+    max-width: 650px;
+    margin: 35px auto 0;
 }
 
 .gallery-item {
     position: relative;
     width: 100%;
-    padding: 9px;
-    border-radius: 26px;
+    padding: 10px;
+    border-radius: 27px;
     background: linear-gradient(145deg, #fff8e9, #d8c194);
     border: 1px solid var(--gold);
+    outline: 1px solid rgba(189,152,82,.25);
+    outline-offset: 4px;
     box-shadow: 0 12px 28px rgba(67,43,24,.13);
     transition: transform .45s ease, box-shadow .45s ease;
+    overflow: hidden;
 }
 
 .gallery-item:nth-child(even) {
@@ -620,8 +716,20 @@ section {
 }
 
 .gallery-item:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     box-shadow: 0 18px 35px rgba(67,43,24,.18);
+}
+
+.gallery-item::before {
+    content: "✧";
+    position: absolute;
+    top: 13px;
+    right: 17px;
+    z-index: 2;
+    color: #fff0c8;
+    font-size: 23px;
+    text-shadow: 0 2px 8px #503719;
+    pointer-events: none;
 }
 
 .gallery-item img {
@@ -633,6 +741,11 @@ section {
     border-radius: 19px;
     border: 1px solid rgba(133,100,46,.35);
     cursor: zoom-in;
+    transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+
+.gallery-item:hover img {
+    transform: scale(1.035);
 }
 
 .gallery-caption {
@@ -647,7 +760,7 @@ section {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(24,16,13,.93);
+    background: rgba(24,16,13,.95);
     align-items: center;
     justify-content: center;
     padding: 18px;
@@ -677,16 +790,21 @@ section {
     height: 42px;
     border-radius: 50%;
     font-size: 23px;
+    cursor: pointer;
 }
 
-/* ---------------- ویدئو ---------------- */
+/* =================================
+   ویدئو
+================================= */
 
 .video-frame {
     max-width: 600px;
-    margin: 28px auto;
-    padding: 8px;
+    margin: 30px auto;
+    padding: 9px;
     background: linear-gradient(145deg, #e7d3a8, #a9823e);
-    border-radius: 27px;
+    border-radius: 28px;
+    outline: 1px solid rgba(189,152,82,.3);
+    outline-offset: 4px;
     box-shadow: 0 12px 28px rgba(70,45,20,.13);
 }
 
@@ -698,23 +816,33 @@ section {
     border-radius: 20px;
 }
 
-/* ---------------- تقویم ---------------- */
+/* =================================
+   تقویم
+================================= */
 
 .calendar-card {
     width: min(100%, 350px);
-    margin: 30px auto;
+    margin: 32px auto;
     overflow: hidden;
     border: 1px solid var(--gold);
-    border-radius: 27px;
+    outline: 1px solid rgba(189,152,82,.25);
+    outline-offset: 5px;
+    border-radius: 28px;
     background: #fbf4e7;
     box-shadow: 0 13px 28px rgba(67,43,24,.12);
     transform-style: preserve-3d;
+    transition: transform .5s ease, box-shadow .5s ease;
+}
+
+.calendar-card:hover {
+    transform: perspective(900px) rotateX(3deg) translateY(-4px);
+    box-shadow: 0 20px 35px rgba(67,43,24,.17);
 }
 
 .calendar-top {
     background: linear-gradient(120deg, var(--wine-dark), var(--wine));
     color: #f8e9c8;
-    padding: 16px;
+    padding: 17px;
     font-size: 14px;
     letter-spacing: 2px;
 }
@@ -724,7 +852,7 @@ section {
 }
 
 .calendar-day {
-    font-size: 90px;
+    font-size: 95px;
     color: var(--wine);
     line-height: 1.4;
 }
@@ -750,21 +878,24 @@ section {
     100% { transform: rotateX(0); }
 }
 
-/* ---------------- نشانی و فرم ---------------- */
+/* =================================
+   نشانی و فرم حضور
+================================= */
 
 .address-icon {
-    width: 68px;
-    height: 68px;
-    margin: 0 auto 17px;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
     display: grid;
     place-items: center;
     border-radius: 50%;
     border: 1px solid var(--gold);
     outline: 1px solid rgba(189,152,82,.35);
-    outline-offset: 4px;
+    outline-offset: 5px;
     color: var(--wine);
-    font-size: 29px;
+    font-size: 30px;
     background: #f8edda;
+    box-shadow: 0 7px 18px rgba(70,45,20,.1);
 }
 
 .address-text {
@@ -779,7 +910,7 @@ section {
     align-items: center;
     justify-content: center;
     gap: 9px;
-    padding: 13px 25px;
+    padding: 14px 25px;
     margin-top: 18px;
     border: 1px solid var(--gold-dark);
     border-radius: 30px;
@@ -798,14 +929,14 @@ section {
 
 .form-group {
     text-align: right;
-    margin: 18px 0;
+    margin: 20px 0;
 }
 
 .form-group label {
     display: block;
     color: var(--gold-dark);
     font-size: 13px;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
 }
 
 .form-group input,
@@ -815,14 +946,15 @@ section {
     color: var(--ink);
     background: #fffaf0;
     border: 1px solid #c9ad76;
-    border-radius: 15px;
+    border-radius: 16px;
     outline: none;
+    transition: box-shadow .25s ease, border-color .25s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     border-color: var(--wine);
-    box-shadow: 0 0 0 3px rgba(118,45,60,.08);
+    box-shadow: 0 0 0 4px rgba(118,45,60,.09);
 }
 
 .submit-button {
@@ -837,8 +969,8 @@ section {
     color: #477044;
     background: #edf4e7;
     border: 1px solid #a9c59a;
-    border-radius: 15px;
-    padding: 13px;
+    border-radius: 17px;
+    padding: 14px;
     margin-bottom: 18px;
     font-size: 13px;
 }
@@ -850,24 +982,26 @@ section {
 }
 
 .footer-names {
-    font-size: 58px;
+    font-size: 62px;
     color: var(--wine);
     margin: 8px 0;
 }
 
 .footer-heart {
     color: var(--wine);
-    font-size: 25px;
+    font-size: 27px;
 }
 
-/* ---------------- افکت اسکرول ---------------- */
+/* =================================
+   افکت‌های ظاهر شدن در اسکرول
+================================= */
 
 .reveal {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(28px);
     transition:
-        opacity .85s ease,
-        transform .85s cubic-bezier(.2,.7,.2,1);
+        opacity .9s ease,
+        transform .9s cubic-bezier(.2,.7,.2,1);
 }
 
 .reveal.visible {
@@ -878,7 +1012,7 @@ section {
 @media (min-width: 560px) {
     .gallery-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px;
+        gap: 25px;
     }
 
     .gallery-item img {
@@ -888,7 +1022,7 @@ section {
 
 @media (max-width: 380px) {
     section {
-        padding: 55px 20px;
+        padding: 58px 20px;
     }
 
     .countdown-grid {
@@ -901,6 +1035,11 @@ section {
 
     .time-number {
         font-size: 20px;
+    }
+
+    .seal-button {
+        width: 108px;
+        height: 108px;
     }
 }
 
@@ -1022,7 +1161,7 @@ section {
         <div class="gallery-grid">{{GALLERY}}</div>
     </section>
 
-    <!-- ویدئو در صورت وجود -->
+    <!-- ویدئو -->
     {{VIDEO}}
 
     <!-- تاریخ مراسم -->
@@ -1218,7 +1357,7 @@ updateCountdown();
 setInterval(updateCountdown, 1000);
 
 
-/* مه روزشمار: با لمس و کشیدن انگشت یا ماوس پاک می‌شود */
+/* مه کاملاً مات: فقط با حرکت انگشت یا ماوس آشکار می‌شود */
 let fogInitialized = false;
 
 function initFog() {
@@ -1254,15 +1393,28 @@ function initFog() {
             0, 0, width, height
         );
 
-        gradient.addColorStop(0, "rgba(241,229,205,.97)");
-        gradient.addColorStop(.5, "rgba(231,216,187,.96)");
-        gradient.addColorStop(1, "rgba(247,237,216,.97)");
+        gradient.addColorStop(0, "#e8d8b9");
+        gradient.addColorStop(.45, "#ddc9a5");
+        gradient.addColorStop(1, "#f0e2c7");
 
         ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
 
-        ctx.fillStyle = "rgba(133,100,46,.1)";
+        /* بافت ظریف روی مه */
+        for (let i = 0; i < 180; i++) {
+            const x = Math.random() * width;
+            const y = Math.random() * height;
+            const radius = 3 + Math.random() * 12;
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255,250,235,0.12)";
+            ctx.fill();
+        }
+
+        ctx.fillStyle = "rgba(133,100,46,.13)";
         ctx.font = "22px serif";
         ctx.fillText("✧", 20, 35);
         ctx.fillText("❦", width - 45, height - 20);
@@ -1281,25 +1433,26 @@ function initFog() {
         ctx.save();
         ctx.globalCompositeOperation = "destination-out";
 
-        const radius = 25;
+        const radius = 19;
 
         const gradient = ctx.createRadialGradient(
             point.x,
             point.y,
-            3,
+            2,
             point.x,
             point.y,
             radius
         );
 
         gradient.addColorStop(0, "rgba(0,0,0,1)");
-        gradient.addColorStop(.65, "rgba(0,0,0,.95)");
+        gradient.addColorStop(.8, "rgba(0,0,0,.98)");
         gradient.addColorStop(1, "rgba(0,0,0,0)");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
         ctx.fill();
+
         ctx.restore();
     }
 
@@ -1319,7 +1472,7 @@ function initFog() {
             const dx = point.x - lastPoint.x;
             const dy = point.y - lastPoint.y;
             const distance = Math.hypot(dx, dy);
-            const steps = Math.max(1, Math.ceil(distance / 10));
+            const steps = Math.max(1, Math.ceil(distance / 8));
 
             for (let i = 1; i <= steps; i++) {
                 eraseAt({
@@ -1339,8 +1492,11 @@ function initFog() {
 
     canvas.addEventListener("pointerup", stopDrawing);
     canvas.addEventListener("pointercancel", stopDrawing);
+    canvas.addEventListener("lostpointercapture", stopDrawing);
 
     resizeCanvas();
+
+    /* هنگام تغییر اندازه، مه دوباره کامل می‌شود */
     window.addEventListener("resize", resizeCanvas);
 }
 
