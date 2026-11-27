@@ -74,7 +74,6 @@ def send_telegram_message(name, count, attendance):
 @app.route("/", methods=["GET", "POST"])
 def home():
 
-    # ثبت پاسخ بدون رفرش صفحه
     if request.method == "POST":
         name = request.form.get("name", "").strip()[:80]
         count = request.form.get("count", "1")
@@ -119,11 +118,15 @@ def home():
                 "message": "ثبت پاسخ با مشکل مواجه شد. لطفاً دوباره تلاش کنید."
             }, 500
 
+    photo_names = ["wedding-photo.jpg"] + [
+        f"photo{i}.jpg" for i in range(1, 7)
+    ]
+
     photos = [
-        f"/static/photo{i}.jpg"
-        for i in range(1, 7)
-        if (STATIC / f"photo{i}.jpg").is_file()
-        and (STATIC / f"photo{i}.jpg").stat().st_size > 1000
+        f"/static/{name}"
+        for name in photo_names
+        if (STATIC / name).is_file()
+        and (STATIC / name).stat().st_size > 1000
     ]
 
     gallery = "".join(
@@ -831,8 +834,13 @@ let opened = false;
 
 const weddingAudio = document.getElementById("weddingMusic");
 
+// تلاش برای پخش خودکار از لحظه ورود
 if (weddingAudio) {
  weddingAudio.load();
+
+ weddingAudio.play().catch(error => {
+  console.log("Autoplay requires user interaction:", error);
+ });
 }
 
 function openInvitation() {
@@ -843,8 +851,8 @@ function openInvitation() {
  const intro = document.getElementById("intro");
  const site = document.getElementById("site");
 
- if (weddingAudio) {
-  weddingAudio.currentTime = 0;
+ // اگر پخش خودکار مسدود شده باشد، با لمس پاکت شروع می‌شود
+ if (weddingAudio && weddingAudio.paused) {
   weddingAudio.play().catch(error => {
    console.log("Audio playback was blocked:", error);
   });
